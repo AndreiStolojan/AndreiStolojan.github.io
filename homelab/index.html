@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://api.web3forms.com; form-action https://api.web3forms.com; base-uri 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Homelab, Andrei Stolojan</title>
+<meta name="description" content="Andrei Stolojan's homelab, a Raspberry Pi 5 running Linux, reached over Tailscale and SSH, hosting apps in Docker.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://andreistolojan.me/homelab/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Andrei Stolojan">
+<meta property="og:title" content="Homelab, Andrei Stolojan">
+<meta property="og:description" content="A Raspberry Pi 5 running Linux, reached over Tailscale and SSH, hosting apps in Docker.">
+<meta property="og:url" content="https://andreistolojan.me/homelab/">
+<meta property="og:image" content="https://andreistolojan.me/assets/andrei.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="name" href="/">Andrei Stolojan</a>
+  <nav aria-label="Sections"><a href="/#about">About</a><a href="/#projects" aria-current="page">Projects</a><a href="/#path">Path</a><a href="/#certs">Certifications</a><a href="/#passions">Passions</a><a href="/#contact">Contact</a></nav>
+  <a class="btn primary" href="#cv">CV</a>
+</div></div>
+
+<main class="page">
+  <a class="crumb back r" href="/#projects">All projects</a>
+
+  <header class="dhead">
+    <div>
+      <h1 class="r">Homelab</h1>
+      <p class="lead r" style="--d:.1s">A Raspberry Pi 5 running Linux. I reach it over Tailscale and SSH, and it hosts my apps in Docker.</p>
+    </div>
+    <dl class="kv r" style="--d:.15s">
+      <dt>Hardware</dt><dd>Raspberry Pi 5</dd>
+      <dt>OS</dt><dd>Linux</dd>
+      <dt>Access</dt><dd>Tailscale, SSH</dd>
+      <dt>Apps</dt><dd>Docker containers</dd>
+      <dt>Status</dt><dd>Ongoing</dd>
+    </dl>
+  </header>
+
+  <section id="setup">
+    <h2 class="r">How I reach it</h2>
+    <div class="two-col">
+      <div class="prose r">
+        <p>The Pi is on my <b>Tailscale</b> network. I open an <b>SSH</b> session over that link and manage the containers from the shell.</p>
+        <p>From my laptop: Tailscale, then SSH into the Pi, then <b>Docker</b>, where each app runs in its own container.</p>
+      </div>
+      <div class="placeholder r" style="--d:.1s" role="img" aria-label="Placeholder for a photo of the Raspberry Pi"><b>Photo of the Pi</b><span>not added yet, 4:3</span></div>
+    </div>
+  </section>
+
+  <footer><span><a class="u" href="/">Andrei Stolojan</a>, 2026</span><span><a class="u arr" href="/#projects">All projects</a></span></footer>
+</main>
+
+<dialog class="dlg" id="cv" aria-labelledby="cv-t"><div class="panel" tabindex="-1">
+  <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+  <div class="top"><span>PDF</span><b>Not online yet</b></div>
+  <h2 id="cv-t">CV</h2>
+  <p>The PDF is not online yet. Until then: LinkedIn, or email me.</p>
+  <div class="links"><a class="btn ext" href="https://www.linkedin.com/in/andrei-stolojan" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="mailto:andreistolojan@gmail.com">Email me</a></div>
+</div></dialog>
+
+<script src="/js/site.js"></script>
+</body>
+</html>

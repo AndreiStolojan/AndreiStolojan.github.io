@@ -1,0 +1,80 @@
+/* About, Moonshot. The quote leads the section, set large next to a drawn sky: a launch pad, the moon and seven
+   stars. A shot leaves the pad, misses the moon and lands on a star, which stays lit (abt-about.js). The first
+   shot plays once when the sky comes into view; every click on the moon fires the next one. White line work, one
+   accent: the cyan of the shot. The section has no visible heading (a hidden one names it for screen readers), so
+   it opens on the sky. Under it: where he is, what his home server runs, and his four languages with the CEFR level
+   drawn as six rising steps. The languages are buttons: each one switches the whole site to it (i18n.js).
+   Reduced motion: the first shot is drawn from the start and later shots appear without motion. */
+
+.abt-top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.5rem var(--gap); align-items: end; }
+.abt-q p { font-size: clamp(1.75rem, 1rem + 2.3vw, 3.6rem); line-height: 1.08; font-weight: 600; letter-spacing: -.025em; color: var(--fg); max-width: 13em; }
+.abt-q span { display: block; }
+.abt-q span + span { color: var(--text); font-weight: 500; margin-top: .2em; }
+
+.abt-sky { min-width: 0; }
+.abt-cv { position: relative; aspect-ratio: 1000 / 340; }
+.abt-cv svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.abt-moon circle { fill: #000; stroke: #fff; stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.abt-moon .abt-lt { fill: #fff; }
+.abt-pad { fill: #fff; }
+.abt-star { fill: transparent; stroke: #8b95a7; stroke-width: 1.3; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; transition: fill .35s, stroke .35s; }
+.abt-star.abt-lit { fill: #fff; stroke: #fff; }
+.abt-star.abt-pop { animation: abt-pop .6s var(--ease); }
+@keyframes abt-pop { 0% { transform: scale(.4); } 55% { transform: scale(1.5); } 100% { transform: scale(1); } }
+/* The shot is dashed by pathLength, which only holds in user units, so it cannot use non-scaling-stroke;
+   abt-about.js sets --k (viewBox units per CSS pixel) to keep it 1.6px wide at any size. */
+.abt-arc { stroke: var(--cyan); stroke-width: calc(1.6 * var(--k, 1)); stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; transition: opacity .5s; }
+.abt-arc.abt-go { opacity: 1; animation: abt-draw 1.15s cubic-bezier(.35, .1, .25, 1) forwards; }
+.abt-arc.abt-done { opacity: 1; stroke-dashoffset: 0; }
+@keyframes abt-draw { to { stroke-dashoffset: 0; } }
+
+/* The moon is the button. Its focus ring is the site's, drawn round. */
+.abt-aim { position: absolute; aspect-ratio: 1; min-width: 44px; translate: -50% -50%; border-radius: 50%; transition: background .2s; }
+.abt-aim:hover { background: rgba(34, 211, 238, .08); }
+.abt-aim:focus-visible { border-radius: 50%; }
+
+.abt-cap { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .25rem 1rem; margin-top: .75rem; font-size: .875rem; color: var(--muted); min-height: 1.4em; }
+.abt-n { color: var(--text); }
+.abt-t { display: none; }
+@media (hover: none) { .abt-m { display: none; } .abt-t { display: inline; } }
+
+.abt-fx { display: grid; gap: 1.5rem var(--gap); margin-top: clamp(2rem, 4vw, 3.5rem); }
+.abt-fx > div { padding-top: 1rem; border-top: 1px solid var(--line); }
+.abt-fx h3 { display: flex; align-items: center; gap: .6rem; font-size: 1.05rem; font-weight: 600; margin-bottom: .7rem; }
+.abt-fx svg { flex: none; width: 1.35rem; height: 1.35rem; fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* Label and value pairs on one baseline: the labels form a quiet column, the values read in white. */
+.abt-fx dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .35rem 1.25rem; }
+.abt-fx dl > div { display: contents; }
+.abt-fx dt { color: var(--muted); }
+.abt-fx dd { display: flex; flex-wrap: wrap; align-items: center; gap: 0 .6rem; color: var(--text); }
+.abt-fx dd b { font-weight: 500; }
+.abt-fx dd span { color: var(--muted); }
+/* Six CEFR steps, About to C2, rising like signal bars and filled up to the level. */
+.abt-lv { display: flex; align-items: flex-end; gap: 3px; height: .9rem; }
+.abt-lv i { width: 4px; height: calc(30% + var(--n) * 14%); border-radius: 1px; background: var(--edge); }
+.abt-lv .abt-on { background: #fff; }
+
+/* Languages: Based and Home server share the first row, the four languages take the full row under them. Each
+   button names the language in itself, then the level. The pressed one is the language the page is in. */
+.abt-fx { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.abt-lang { order: 1; grid-column: 1 / -1; }
+.abt-ls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; }
+.abt-ls button { display: grid; gap: .3rem; justify-items: start; align-content: start; padding: .8rem 1rem .85rem; border: 1px solid var(--edge); border-radius: 10px; text-align: left; transition: border-color .2s, background .2s; }
+.abt-ls button:hover { border-color: #5d6a80; }
+.abt-ls button[aria-pressed="true"] { border-color: var(--fg); background: var(--well); box-shadow: 0 0 0 1px var(--fg) inset; }
+.abt-ls b { font-size: 1.1rem; font-weight: 600; color: var(--fg); letter-spacing: -.01em; }
+.abt-lvl { display: flex; flex-wrap: wrap; align-items: center; gap: .1rem .55rem; color: var(--text); font-weight: 500; font-size: .95rem; }
+.abt-note { color: var(--muted); font-weight: 400; }
+
+@media (max-width: 760px) {
+  .abt-top, .abt-fx { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .abt-ls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .abt-arc, .abt-star { transition: none; }
+  .abt-arc.abt-go { animation: none; stroke-dashoffset: 0; }
+  .abt-star.abt-pop { animation: none; }
+}

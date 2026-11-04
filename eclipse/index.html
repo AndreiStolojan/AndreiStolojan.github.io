@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://api.web3forms.com; form-action https://api.web3forms.com; base-uri 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Eclipse, Andrei Stolojan</title>
+<meta name="description" content="Eclipse, a macOS notch app by Andrei Stolojan for what's playing, a file shelf, the next event and a timer, with no accounts and no telemetry.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://andreistolojan.me/eclipse/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Andrei Stolojan">
+<meta property="og:title" content="Eclipse, Andrei Stolojan">
+<meta property="og:description" content="A macOS notch app for what's playing, a file shelf, the next event and a timer. No accounts, no telemetry.">
+<meta property="og:url" content="https://andreistolojan.me/eclipse/">
+<meta property="og:image" content="https://andreistolojan.me/assets/og/eclipse.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="name" href="/">Andrei Stolojan</a>
+  <nav aria-label="Sections"><a href="/#about">About</a><a href="/#projects" aria-current="page">Projects</a><a href="/#path">Path</a><a href="/#certs">Certifications</a><a href="/#passions">Passions</a><a href="/#contact">Contact</a></nav>
+  <a class="btn primary" href="#cv">CV</a>
+</div></div>
+
+<main class="page">
+  <a class="crumb back r" href="/#projects">All projects</a>
+
+  <header class="dhead">
+    <div>
+      <h1 class="r">Eclipse</h1>
+      <p class="lead r" style="--d:.1s">A macOS notch app for what's playing, a file shelf, the next event and a timer. No accounts, no telemetry.</p>
+      <div class="actions r" style="--d:.2s">
+        <a class="btn primary ext" href="https://github.com/AndreiStolojan/Eclipse" target="_blank" rel="noopener">Source on GitHub</a>
+      </div>
+    </div>
+    <dl class="kv r" style="--d:.15s">
+      <dt>Platform</dt><dd>macOS 15 or newer, built with Xcode 27</dd>
+      <dt>Built with</dt><dd>Swift, SwiftUI and AppKit, native</dd>
+      <dt>Checks</dt><dd>1,054 focused automated checks</dd>
+      <dt>License</dt><dd>GPL v3</dd>
+      <dt>Status</dt><dd>In development, personal tool</dd>
+    </dl>
+  </header>
+
+  <figure class="cover r">
+    <picture>
+      <source media="(min-width: 1400px)" srcset="/assets/eclipse-banner.webp" width="1584" height="396">
+      <img src="/assets/eclipse-cover.webp" alt="Eclipse's closed notch on a blue macOS wallpaper, showing the artwork and title of the song playing." width="1200" height="627" fetchpriority="high">
+    </picture>
+  </figure>
+
+  <section id="screens">
+    <h2 class="r">In the notch</h2>
+    <div class="notches">
+      <figure class="r"><div class="tile"><img src="/assets/eclipse-expanded-playing.png" alt="Open player: artwork, title and artist, a progress bar with times, and shuffle, previous, pause, next and repeat buttons." width="640" height="336" loading="lazy"></div><figcaption><b>Now playing.</b> Artwork, title, progress, transport and seeking. Hover opens it, a two-finger swipe skips tracks.</figcaption></figure>
+      <figure class="r" style="--d:.06s"><div class="tile"><img src="/assets/eclipse-expanded-shelf.png" alt="File shelf page with four files, an AirDrop button and a trash button." width="640" height="336" loading="lazy"></div><figcaption><b>Shelf.</b> Drop files on the notch to keep them around, then drag them out or send them by AirDrop.</figcaption></figure>
+      <figure class="r" style="--d:.12s"><div class="tile"><img src="/assets/eclipse-timer-running.png" alt="Timer page: a ring filling around 12:34 remaining, pause and cancel buttons, and a plus one minute button." width="640" height="336" loading="lazy"></div><figcaption><b>Timer.</b> Presets or a length set by scrolling the ring. The closed notch shows the countdown in its wings.</figcaption></figure>
+      <figure class="r"><div class="tile"><img class="widget" src="/assets/eclipse-lock-media-glass.webp" alt="Lock screen media widget in glass: artwork, title, artist, progress line and transport buttons." width="800" height="400" loading="lazy"></div><figcaption><b>Lock screen.</b> While the Mac is locked, a media widget sits above the user picture, in glass or a frosted blur.</figcaption></figure>
+      <figure class="r" style="--d:.06s"><div class="tile"><img class="strip" src="/assets/eclipse-hud-volume.png" alt="Closed notch with a speaker symbol on the left and a short volume meter on the right." width="582" height="64" loading="lazy"><img class="strip" src="/assets/eclipse-hud-battery-low.png" alt="Closed notch with a red battery symbol on the left and 20 percent on the right." width="582" height="64" loading="lazy"></div><figcaption><b>Indicators.</b> Volume, brightness, mute, Caps Lock, battery and Focus show briefly in the closed notch's wings.</figcaption></figure>
+      <figure class="r" style="--d:.12s"><div class="tile"><img class="strip" src="/assets/eclipse-dictation-recording.png" alt="Closed notch as a pill with twelve bars while Sotto records." width="484" height="116" loading="lazy"></div><figcaption><b>Dictation.</b> While <a class="u" href="/sotto/">Sotto</a> records, the notch becomes a pill with twelve bars driven by the microphone level.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="build">
+    <h2 class="r">How it is built</h2>
+    <div class="prose cols r">
+      <p>A native <b>SwiftUI and AppKit</b> panel around the camera cutout. It reads what macOS reports as now playing, and for web media it names the site instead, read from the browser's tabs. The open notch pages between Music, Calendar, Timer and the shelf with a two-finger swipe.</p>
+      <p>The calendar page lists today's remaining events with a Join button for video calls, and the closed notch counts down to the next one. The panel stays out of screenshots and recordings by default.</p>
+      <p>Media takes one path: the player reports to macOS now playing, Eclipse reads that, and draws it in the notch. Dictation takes another: Sotto sends the microphone level over a local socket, and Eclipse draws the pill.</p>
+      <p>There is no plugin framework. Sotto reaches the notch only through that socket. The one external package, MediaRemoteAdapter, is pinned to a commit. The repository holds <b>1,054 focused checks</b> for geometry, state, settings, hover, swipe, shelf, indicators, calendar, timer and dictation.</p>
+    </div>
+  </section>
+
+  <footer><span><a class="u" href="/">Andrei Stolojan</a>, 2026</span><span><a class="u arr" href="/sotto/">Next project: Sotto</a></span></footer>
+</main>
+
+<dialog class="dlg" id="cv" aria-labelledby="cv-t"><div class="panel" tabindex="-1">
+  <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+  <div class="top"><span>PDF</span><b>Not online yet</b></div>
+  <h2 id="cv-t">CV</h2>
+  <p>The PDF is not online yet. Until then: LinkedIn, or email me.</p>
+  <div class="links"><a class="btn ext" href="https://www.linkedin.com/in/andrei-stolojan" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="mailto:andreistolojan@gmail.com">Email me</a></div>
+</div></dialog>
+
+<script src="/js/site.js"></script>
+</body>
+</html>

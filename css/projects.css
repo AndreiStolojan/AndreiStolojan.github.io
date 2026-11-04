@@ -1,0 +1,196 @@
+/* Projects, the objects, second round. Quiet: black stages on a lifted surface, white objects, one real colour per
+   project at most (Barb's red barb and verdict, Eclipse's red progress bar, the Pi's green LED, the thesis green).
+   Each object is HTML, not a picture, and does what the app does (prj-projects.js):
+     Barb      click a message and Barb scans it: its badge, its score counting up while the meter fills, then the
+               rules one by one; each click plays the scan again. The scores are illustrative.
+     Eclipse   hover opens the notch on a spring with a trace of overshoot (0.55s), leaving closes it softer
+               (0.42s), as in the app; next and previous swap the two tracks with the artwork flip; play, pause,
+               shuffle, repeat and the page buttons press like buttons; the wave in the closed notch moves while a
+               track plays.
+     Sotto     the twelve bars of the recording pill move continuously while the stage is on screen.
+     Homelab   a line drawing of the Pi 5 until the photo exists.
+   Continuous motion (Sotto's bars, Eclipse's wave) is transform-only, so it stays on the compositor, and it pauses
+   whenever its stage is off screen (.prj-live) and under reduced motion.
+   Stages size their insides in container units (cqi), so an object looks the same at any column width. */
+
+/* Projects gets its own full-width surface: About me ends at its top edge. */
+.prj-sec { margin: clamp(3.5rem, 6vw, 6rem) calc(-1 * var(--pad)) 0; padding: clamp(2.75rem, 5vw, 5rem) var(--pad) clamp(3.5rem, 6vw, 6rem); background: #0b0c10; border-block: 1px solid #1e2430; }
+.prj-sec h2 { border-bottom-color: #232a37; }
+
+.prj-list { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2.5rem, 4vw, 3.5rem) var(--gap); }
+.projects { position: relative; display: flex; flex-direction: column; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.prj-stage { position: relative; z-index: 1; flex: none; width: 100%; container-type: inline-size; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; background: #000; box-shadow: inset 0 0 0 1px #1b1f27; }
+.prj-hd { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .6rem; margin-top: 1.1rem; }
+.xi { display: block; flex: none; width: 1.9rem; height: 1.9rem; border-radius: 22%; }
+.xi.pi { display: grid; place-items: center; background: #000; box-shadow: inset 0 0 0 1px #2a2f38; }
+.xi.pi svg { width: 84%; }
+.projects h3 { font-size: 1.3rem; }
+.projects h3 a::after { content: ""; position: absolute; inset: 0; }                /* the text opens the project's page */
+.projects:hover h3 a, .projects h3 a:focus-visible { color: var(--cyan); }
+.prj-hd .kind { font-size: .875rem; color: var(--muted); }
+.prj-sum { margin-top: .45rem; max-width: 36em; }
+.prj-stk { margin-top: .35rem; font-size: .875rem; color: var(--muted); }
+.prj-ft { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: auto; padding-top: 1rem; }
+.prj-lk { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+
+/* The thesis grade, linked to its place on the path. */
+.prj-grade { display: inline-flex; align-items: center; gap: .55rem; font-size: .875rem; font-weight: 500; color: var(--text); transition: color .2s; }
+.prj-grade:hover { color: #fff; }
+.prj-grade .ring { position: relative; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; }
+.prj-grade svg { position: absolute; inset: 0; transform: rotate(-90deg); fill: none; stroke-width: 3; }
+.prj-grade .trk { stroke: #12502b; }
+.prj-grade .arc { stroke: #3dff7f; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 11; }
+.prj-grade b { font-size: .875rem; font-weight: 600; color: #fff; }
+
+/* ---------- Barb: click a message, see its score ---------- */
+.bx { position: absolute; inset: 0; display: grid; align-content: center; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 4cqi; padding: 4.5cqi; }
+.bx-hd { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; font-size: 1rem; }
+.bx-hd .hook { width: 1.5rem; height: 1.5rem; }
+.hook .shank { stroke: #fff; }
+.hook .barb { stroke: #5b616c; transition: stroke .3s; }
+.bx[data-v="phish"] .hook .barb { stroke: #ff4d4d; }
+.bx-hd .hint { margin-left: auto; font-size: .875rem; color: var(--muted); text-align: right; }
+.bx-hd .hint .t { display: none; }
+@media (hover: none) { .bx-hd .hint .m { display: none; } .bx-hd .hint .t { display: inline; } }
+.bx-msg { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .65rem; align-items: start; width: calc(100% + 1.2rem); padding: .55rem .6rem; margin-inline: -.6rem; border-radius: 8px; text-align: left; transition: background .2s, transform .15s; }
+.bx-msg:hover { background: #121317; }
+.bx-msg:active { transform: scale(.985); }
+.bx-msg[aria-pressed="true"] { background: #1a1b20; }
+.bx-msg > i { display: grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: #26262c; font-style: normal; font-size: .875rem; font-weight: 600; color: var(--text); }
+.bx-msg > span { display: grid; min-width: 0; }
+.bx-msg b { font-size: .9375rem; font-weight: 600; line-height: 1.3; }
+.bx-msg span span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .875rem; line-height: 1.35; color: var(--muted); }
+.bx-msg time { font-size: .875rem; color: var(--muted); }
+/* A message's badge shows once it has been scanned, in the app's verdict colours. */
+.bx-msg em { --c: #8ccbb0; display: none; justify-self: start; align-items: center; gap: .35rem; margin-top: .3rem; padding: .1rem .5rem; border-radius: 5px; font-style: normal; font-size: .875rem; font-weight: 500; color: var(--c); background: color-mix(in srgb, var(--c) 13%, #000); }
+.bx-msg em::before { content: ""; width: .4rem; height: .4rem; border-radius: 50%; background: var(--c); }
+.bx-msg[data-v="sus"] em { --c: #f1bb63; }
+.bx-msg[data-v="phish"] em { --c: #ff8a9b; }
+.bx-msg.seen em { display: inline-flex; animation: prj-in .3s ease-out .15s both; }
+@keyframes prj-in { from { opacity: 0; transform: translateY(-3px); } }
+
+.bx-score { --c: #8ccbb0; align-self: center; display: grid; gap: .7rem; }
+.bx[data-v="sus"] .bx-score { --c: #f1bb63; }
+.bx[data-v="phish"] .bx-score { --c: #ff8a9b; }
+.bx-score .idle { font-size: .875rem; color: var(--muted); }
+.bx:not([data-v]) .sc, .bx:not([data-v]) .meter { display: none; }
+.bx[data-v] .idle { display: none; }
+.sc { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; }
+.sc .n { font-size: clamp(1.75rem, 7cqi, 2.6rem); font-weight: 600; line-height: 1; letter-spacing: -.02em; }
+.sc span { font-size: .875rem; color: var(--muted); }
+.sc em { flex-basis: 100%; font-style: normal; font-size: .875rem; font-weight: 500; color: var(--c); }
+.meter { display: block; height: 4px; border-radius: 2px; background: #22252c; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--c); transform-origin: left; transform: scaleX(var(--s, 0)); transition: transform .9s cubic-bezier(.3, .7, .2, 1); }
+.bx-score ul { list-style: none; display: grid; gap: .45rem; }
+.bx-score ul[hidden] { display: none !important; }
+.bx-score li { display: flex; justify-content: space-between; gap: .75rem; font-size: .875rem; color: var(--text); animation: prj-in .3s ease-out .35s both; }
+.bx-score li:nth-child(2) { animation-delay: .5s; }
+.bx-score li:nth-child(3) { animation-delay: .65s; }
+.bx-score li:nth-child(4) { animation-delay: .8s; }
+.bx-score li b { font-weight: 500; color: var(--muted); }
+/* Narrow stages: the list on top, the score and its rules under it. */
+@container (max-width: 560px) {
+  .bx-score ul { display: none; }
+  /* One line per message: the subject and time give way, the badge takes the time's place. */
+  .bx-msg { align-items: center; padding-block: .35rem; }
+  .bx-msg > i { width: 1.85rem; height: 1.85rem; }
+  .bx-msg span span, .bx-msg time { display: none; }
+  .bx-msg em { grid-column: 3; grid-row: 1; margin-top: 0; }
+  .bx { position: static; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 3.5cqi; padding: 5cqi; }
+  .bx-score { align-self: start; }
+}
+
+/* ---------- Eclipse: the notch ---------- */
+.prj-eclipse .prj-stage { --W: 64cqi; background: linear-gradient(180deg, #2a2e37, #121419 75%); }
+.prj-eclipse .prj-stage::before { content: ""; position: absolute; inset: 0 0 auto; height: calc(var(--W) * .1); background: rgba(0, 0, 0, .25); }
+.nt { position: absolute; top: 0; left: 50%; z-index: 1; width: calc(var(--W) * .8); height: calc(var(--W) * .1); transform: translateX(-50%); background: #000; border-radius: 0 0 calc(var(--W) * .045) calc(var(--W) * .045); overflow: hidden; cursor: pointer; outline-offset: 3px;
+  transition: width .42s cubic-bezier(.3, .8, .3, 1), height .42s cubic-bezier(.3, .8, .3, 1), border-radius .42s; }
+.nt.open { width: var(--W); height: calc(var(--W) * .525); border-radius: 0 0 calc(var(--W) * .075) calc(var(--W) * .075);
+  transition: width .55s cubic-bezier(.3, 1.22, .45, 1), height .55s cubic-bezier(.3, 1.22, .45, 1), border-radius .55s; }
+.wings { position: absolute; inset: 0 0 auto; height: calc(var(--W) * .1); display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--W) * .04); transition: opacity .15s; }
+.nt.open .wings { opacity: 0; }
+.cv { display: block; flex: none; background: var(--cv); }
+.cv.mini { width: calc(var(--W) * .055); height: calc(var(--W) * .055); border-radius: 3px; }
+.wave { display: flex; align-items: center; gap: calc(var(--W) * .008); height: calc(var(--W) * .05); }
+.wave i { width: calc(var(--W) * .009); height: 100%; border-radius: 2px; background: #fff; transform: scaleY(.25); transition: transform .5s; animation: prj-wave 1.2s ease-in-out infinite alternate paused; }
+.wave i:nth-child(2) { animation-duration: .9s; animation-delay: -.3s; }
+.wave i:nth-child(3) { animation-duration: 1.35s; animation-delay: -.7s; }
+.wave i:nth-child(4) { animation-duration: 1s; animation-delay: -.2s; }
+.wave i:nth-child(5) { animation-duration: 1.15s; animation-delay: -.5s; }
+.prj-stage.prj-live .nt.playing .wave i { animation-play-state: running; }
+.nt.paused .wave i { animation: none; }
+@keyframes prj-wave { 0% { transform: scaleY(.3); } 50% { transform: scaleY(.9); } 100% { transform: scaleY(.5); } }
+
+.pl { position: absolute; top: 0; left: 50%; width: var(--W); height: calc(var(--W) * .525); padding: calc(var(--W) * .055) calc(var(--W) * .06) 0; transform: translateX(-50%) scale(.96); opacity: 0; filter: blur(3px); transition: opacity .15s, transform .2s, filter .15s; }
+.nt.open .pl { transform: translateX(-50%); opacity: 1; filter: none; transition: opacity .3s .12s, transform .45s .1s var(--ease), filter .3s .12s; }
+.pages { position: absolute; top: calc(var(--W) * .035); right: calc(var(--W) * .05); display: flex; gap: calc(var(--W) * .008); }
+.pages button { display: grid; place-items: center; width: calc(var(--W) * .06); height: calc(var(--W) * .06); border-radius: 6px; opacity: .55; transition: opacity .2s, transform .12s, background .2s; }
+.pages button.on { opacity: 1; }
+.pages button:hover { background: rgba(255, 255, 255, .1); }
+.pages button:active { transform: scale(.88); }
+.pages svg { width: 64%; height: 64%; fill: #fff; }
+.pages svg.st, .ct svg.st { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pl-now { display: flex; align-items: center; gap: calc(var(--W) * .045); }
+.cv.art { width: calc(var(--W) * .165); height: calc(var(--W) * .165); border-radius: calc(var(--W) * .03); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
+.ti { display: grid; min-width: 0; }
+.ti b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: max(.875rem, calc(var(--W) * .052)); font-weight: 700; line-height: 1.25; }
+.ti span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: max(.875rem, calc(var(--W) * .042)); color: #a1a1a6; }
+.pr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: calc(var(--W) * .03); margin-top: calc(var(--W) * .05); font-size: .875rem; color: #a1a1a6; font-variant-numeric: tabular-nums; }
+.tr { height: max(3px, calc(var(--W) * .011)); border-radius: 99px; background: #2c2c30; overflow: hidden; }
+.tr i { display: block; height: 100%; background: #ff3b30; transform-origin: left; transform: scaleX(var(--p, 0)); }
+.tr i.run { transition: transform 1s linear; }
+.ct { display: flex; align-items: center; justify-content: space-between; margin-top: calc(var(--W) * .04); }
+.ct button { display: grid; place-items: center; width: calc(var(--W) * .11); height: calc(var(--W) * .11); border-radius: 50%; }
+.ct button { transition: background .2s, transform .15s; }
+.ct button:hover { background: rgba(255, 255, 255, .1); }
+.ct button:active { transform: scale(.88); }
+.ct svg { width: 62%; height: 62%; fill: #fff; }
+.ct .pp svg { width: 70%; height: 70%; }
+.ct .tg { opacity: .45; transition: opacity .2s, background .2s, transform .15s; }
+.ct .tg svg { width: 52%; height: 52%; }
+.ct .tg[aria-pressed="true"] { opacity: 1; }
+.ct .tg[aria-pressed="true"]::after { content: ""; position: absolute; bottom: 8%; width: 3px; height: 3px; border-radius: 50%; background: #fff; }
+.ct button { position: relative; }
+.pp svg:last-child, .nt.paused .pp svg:first-child { display: none; }
+.nt.paused .pp svg:last-child { display: block; }
+/* The two covers: drawn, not album art. */
+.c0 { --cv: radial-gradient(circle at 32% 30%, #9fb2c6, #3b4656 48%, #161b23 100%); }
+.c1 { --cv: linear-gradient(140deg, #c8b59b, #6b5a49 55%, #2a221c); }
+
+/* ---------- Sotto: the recording pill ---------- */
+.prj-sotto .prj-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7cqi; background: radial-gradient(60% 70% at 50% 40%, #111317, #000); }
+.prj-sotto .pill { display: flex; align-items: center; gap: max(3px, .9cqi); height: clamp(2.4rem, 10cqi, 3.6rem); padding: 0 max(1rem, 4.5cqi); border-radius: 99px; background: #000; box-shadow: 0 0 0 1px #262a31, 0 18px 40px -18px #000; }
+.prj-sotto .pill i { width: max(3px, .9cqi); height: clamp(1.4rem, 6cqi, 2.2rem); border-radius: 3px; background: #fff; transform: scaleY(.45); animation: prj-voice calc(.9s + mod(var(--i) * 7, 5) * .13s) ease-in-out calc(var(--i) * -.23s) infinite alternate paused; }
+.prj-sotto .prj-stage.prj-live .pill i { animation-play-state: running; }
+@keyframes prj-voice { 0% { transform: scaleY(.22); } 25% { transform: scaleY(.8); } 45% { transform: scaleY(.45); } 70% { transform: scaleY(1); } 100% { transform: scaleY(.35); } }
+.prj-sotto .keys { display: flex; gap: 8cqi; }
+.prj-sotto .keys > span { display: grid; grid-auto-flow: column; gap: 6px; justify-items: center; }
+.prj-sotto small { grid-row: 2; grid-column: 1 / -1; margin-top: .35rem; font-size: .875rem; color: var(--muted); }
+.prj-sotto kbd { display: grid; place-items: center; width: clamp(2.2rem, 8cqi, 3rem); height: clamp(2.2rem, 8cqi, 3rem); font: 600 .9375rem/1 var(--sans); color: #fff; background: #15171b; border: 1px solid #2e333b; border-bottom-width: 3px; border-radius: 7px; }
+
+/* ---------- Homelab: the Pi, drawn, until the photo ---------- */
+.prj-homelab .prj-stage { display: grid; place-items: center; padding-bottom: 2.2rem; }
+.board { width: 54%; fill: none; stroke: #4b525e; stroke-width: .8; }
+.board .pins rect { fill: #4b525e; stroke: none; }
+.board .led { fill: #31d07a; stroke: none; filter: drop-shadow(0 0 2px #31d07a); }
+.drawn { position: absolute; right: 3.5cqi; bottom: 3.5cqi; font-size: .875rem; color: var(--muted); padding: .2rem .55rem; border: 1px dashed #3a414d; border-radius: 6px; }
+
+/* ---------- widths ---------- */
+@media (min-width: 1700px) {
+  .prj-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .prj-stage { aspect-ratio: 1; }
+  .prj-barb .bx-score ul { display: grid; }
+}
+@media (max-width: 760px) {
+  .prj-list { grid-template-columns: minmax(0, 1fr); }
+  .prj-stage { aspect-ratio: 4 / 3; }
+  /* On a phone Barb's stage grows with its content, so the rules fit under the score. */
+  .prj-barb .prj-stage { aspect-ratio: auto; }
+  .prj-barb .bx-score ul { display: grid; }
+  .prj-eclipse .prj-stage { --W: 86cqi; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .projects *, .projects *::before, .projects *::after { transition: none !important; animation: none !important; }
+}

@@ -1,0 +1,387 @@
+/* Shared by the three path variants: the sport colour, the medal metals, and the popup bits they need.
+
+   Colour: cyan is work, coral is study (both from v3). Sport gets one new hue, violet, chosen because it sits at
+   the same lightness as the other two and is far from both on the wheel, so three lanes read as equals. The
+   three metals are reserved for medals, so they stay rare and mean one thing. Every one of these passes 7:1 as
+   text on black, and the dark ink inside a medal disc passes 7:1 on each metal. */
+:root { --violet: #a78bfa; --gold: #f2c14e; --silver: #cbd3dd; --bronze: #cf8a57; --ink: #0b0d12; }
+
+/* Medal disc: the placing is written in it (1 gold, 2 silver, 3 bronze), so colour is never the only signal. */
+.md { display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; font-size: .875rem; font-weight: 600; line-height: 1; color: var(--ink); font-style: normal; flex: none; }
+.md.g { background: var(--gold); }
+.md.s { background: var(--silver); }
+.md.b { background: var(--bronze); }
+
+/* Key under a chart: three discs and one sentence. */
+.key { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; margin-top: 1.25rem; font-size: .875rem; color: var(--muted); }
+.key .md { margin-left: .35rem; }
+.key .md:first-child { margin-left: 0; }
+
+/* Popups: the sport tone and the honours list inside the handball popup. */
+.panel.sport .top b { color: var(--violet); }
+.panel p .md { vertical-align: -.35em; margin-right: .25rem; }
+.honours { list-style: none; margin-top: 1rem; max-width: 30rem; }
+.honours li { display: flex; gap: .75rem; align-items: center; padding: .5rem 0; border-top: 1px solid var(--line); color: var(--text); }
+.honours li b { font-weight: 500; color: var(--fg); margin-right: .25rem; }
+
+/* Path, pinned horizontal journey, refined from P8.
+   Desktop: the section pins under the top bar while vertical scrolling pans the track from 2013 to now. The track
+   runs edge to edge (no lane names, no legend): every shape says what it is through its own look and its label.
+   A white playhead stays at a fixed spot (it only travels at the two ends) and prints the year it is on. Behind it
+   everything is filled in and lit; ahead it is dim. path-journey.js sets --tx (pan), --ph (playhead, in track px)
+   and --phx (playhead, on screen) on .jr-hz, --p (0 to 1) on .jr, and .on on each mark the playhead has passed.
+
+   Phones, short viewports and reduced motion: no pinning. Year groups with rails alongside, same identities.
+
+   Identities, one meaning each:
+     high school   treated like Erasmus+: the Calderon crest repeated along the bar in the crest's navy, #25397e
+                   fill behind the playhead, #08102a ahead, #7f9be6 edges
+     B.Eng.        treated like Erasmus+: UPT's short mark repeated in its two official colours, anthracite grey
+                   #808285 letters and an indigo block, on indigo #2e3192 behind the playhead and #0b0c2e ahead;
+                   a trace under the bar, the thesis grade ring at the end in green #3dff7f
+     Erasmus+      THI's brand blues: #3392ff edges and signets, #051d38 and #0b2f5c fill, the signet repeated;
+                   a bracket shows it branching off the degree and merging back
+     work          time cards in each employer's colours (OPSWAT #1d6bfc on navy #0d2654, Wolt #00c2e8, Atos
+                   #0073e6 on #00005c), the logo as the name, square corners
+     courses       lime #bef264 pills printed with a guilloche, the wave pattern on certificates and banknotes,
+                   and a hexagon credential badge per course
+     handball      Poli violet #5b2a99 with the club's crest repeated in a tonal violet; captain's armband at 2024;
+                   ends July 2026
+     awards        gold #f2c14e trophy 1, silver #cbd3dd medal 2, bronze #cf8a57 rosette 3; chess is a rook
+   Every award and badge is an outline until the playhead reaches it, then it fills in. */
+
+.jr-sec {
+  --hb: #5b2a99; --hb-deep: #1c0d33; --hb-tint: #c3a6ff; --hb-text: #e2d4ff;
+  /* Schools: UPT's official indigo #2e3192 and grey #808285 (identity manual, 2017), Calderon's crest navy. */
+  --upt: #2e3192; --upt-grey: #808285; --upt-bg: #0b0c2e; --upt-edge: #7a7ee8; --upt-tint: #b9bbf7; --upt-chip: #07081f;
+  --cal: #25397e; --cal-bg: #08102a; --cal-edge: #7f9be6; --cal-tint: #b4c6f2; --cal-chip: #050a1c;
+  --thi: #3392ff; --thi-tint: #7eb4f7; --thi-dawn: #051d38; --thi-night: #031121; --thi-fill: #0b2f5c;
+  --cr: #bef264; --cr-edge: #8fbf2a; --cr-bg: #0a0d04; --cr-fill: #1f2b08; --cr-tint: #d9f99d; --cr-ink: #11180a;
+  /* Employers: official colours as edges and ticks, their darkest official tone (or a deep shade) as the fill. */
+  --opswat: #1d6bfc; --opswat-fill: #0d2654; --opswat-bg: #050f22; --opswat-tint: #a9c4ff;
+  --wolt: #00c2e8; --wolt-fill: #004e5f; --wolt-bg: #021a20; --wolt-tint: #a6efff;
+  --atos: #0073e6; --atos-fill: #00005c; --atos-bg: #02021f; --atos-tint: #a8cfff;
+  --ic: 2.5rem;       /* award icon */
+  --ci: 1.75rem;      /* course badge */
+  --hex: polygon(50% 0, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%);
+}
+
+/* ---------- awards: trophy, medal, rosette, rook ---------- */
+.aw { --m: var(--gold); position: relative; display: inline-block; flex: none; width: var(--ic); height: var(--ic); font-style: normal; }
+.aw.silver { --m: var(--silver); }
+.aw.bronze { --m: var(--bronze); }
+.aw svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.aw .f { fill: var(--m); stroke: var(--m); stroke-width: 1.5; stroke-linejoin: round; transition: fill .25s; }
+.aw .s { fill: none; stroke: var(--m); stroke-width: 1.75; stroke-linecap: round; }
+/* The placing sits on the icon as text, on a patch of the same metal, so it reads as part of the shape. */
+.aw .n { position: absolute; left: 50%; top: var(--ny); transform: translate(-50%, -50%); padding: 0 1px; border-radius: 2px; background: var(--m); color: var(--ink); font-size: .875rem; font-weight: 700; line-height: 1; transition: background .25s, color .25s; }
+/* On the desktop track an award is an outline until the playhead reaches it. */
+.jr-hz .aw:not(.on) .f { fill: #000; }
+.jr-hz .aw:not(.on) .n { background: #000; color: var(--m); }
+
+/* ---------- course badge: a lime hexagon with the course's icon, the shape of a credential badge ---------- */
+.ci { position: relative; display: inline-grid; place-items: center; flex: none; width: var(--ci); height: calc(var(--ci) * 1.08); clip-path: var(--hex); background: var(--cr); font-style: normal; }
+.ci::before { content: ""; position: absolute; inset: 2px; clip-path: var(--hex); background: #000; opacity: 0; transition: opacity .25s; }
+.ci svg { position: relative; width: 60%; height: 60%; fill: none; stroke: var(--cr-ink); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: stroke .25s; }
+.jr-hz .ci:not(.on)::before { opacity: 1; }
+.jr-hz .ci:not(.on) svg { stroke: var(--cr); }
+
+/* Logos: white, drawn through the logo file as a mask, so they take any colour and never carry a background. */
+.lg { display: inline-block; flex: none; font-style: normal; background: #fff; -webkit-mask: var(--src) no-repeat 0 50% / contain; mask: var(--src) no-repeat 0 50% / contain; }
+
+.lg.opswat { --src: url(/assets/logos/opswat-white.svg); width: 5.3rem; height: .85rem; }
+.lg.wolt { --src: url(/assets/logos/wolt-word.png); width: 2.9rem; height: 1.1rem; }
+.lg.atos { --src: url(/assets/logos/atos-white.png); width: 2.9rem; height: 1rem; }
+
+/* The thesis grade: a green ring filling to 89% around the number. Its resting state is the final state. When JS
+   can play it (.jr.anim), it stays empty until the playhead or reading line reaches it, then plays once (.played):
+   the ring draws while the number counts up (1.4s), then the number pops, the ring flashes, a ripple leaves it and
+   twelve sparks fly out and fade. Every animation runs once and ends invisible or at rest. */
+.grade { position: relative; display: inline-grid; place-items: center; flex: none; width: 2.9rem; height: 2.9rem; border-radius: 50%; background: #000; font-style: normal; }
+.grade svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: 3.5; }
+.grade .trk { stroke: #12502b; }
+.grade .arc { stroke: #3dff7f; stroke-dasharray: 100; stroke-dashoffset: 11; stroke-linecap: round; transition: stroke-dashoffset 1.4s cubic-bezier(.3, .6, .2, 1); }
+.grade .gv { position: relative; font-size: .9375rem; font-weight: 600; line-height: 1; color: var(--fg); transition: opacity .3s; }
+.grade::after { content: ""; position: absolute; inset: 0; border: 2px solid #3dff7f; border-radius: 50%; opacity: 0; pointer-events: none; }
+.grade .spk { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: #3dff7f; opacity: 0; }
+.grade .spk:nth-child(even) { width: 4px; height: 4px; margin: -2px; background: #d9ffe6; }
+.jr.anim .grade:not(.played) .arc { stroke-dashoffset: 100; }
+.jr.anim .grade:not(.played) .gv { opacity: 0; }
+.jr.anim .grade.played svg { animation: g-flash 1s 1.3s ease-out both; }
+.jr.anim .grade.played .gv { animation: g-pop .5s 1.3s cubic-bezier(.3, 1.6, .5, 1) both; }
+.jr.anim .grade.played::after { animation: g-ripple .9s 1.3s ease-out forwards; }
+.jr.anim .grade.played .spk { animation: g-spark 1.1s 1.3s cubic-bezier(.2, .7, .3, 1) forwards; }
+.jr.anim .grade.played .spk:nth-child(even) { animation-delay: 1.4s; }
+@keyframes g-flash { 35% { filter: drop-shadow(0 0 7px rgba(61, 255, 127, .95)); } to { filter: drop-shadow(0 0 0 rgba(61, 255, 127, 0)); } }
+@keyframes g-pop { 45% { transform: scale(1.35); } }
+@keyframes g-ripple { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(2); } }
+@keyframes g-spark { from { opacity: 0; transform: rotate(var(--r)) translateY(-1.4rem) scale(.6); } 20% { opacity: 1; transform: rotate(var(--r)) translateY(-1.75rem) scale(1); } to { opacity: 0; transform: rotate(var(--r)) translateY(-2.5rem) scale(.3); } }
+
+/* Stage. Pinned only when JS adds .pin, which it does under the same conditions as the media query below. */
+.jr-stage { position: relative; display: flex; flex-direction: column; }
+.jr-stage > h2 { flex: none; }
+.jr.pin .jr-stage { position: sticky; top: calc(3.75rem + 1px); height: calc(100vh - 3.75rem - 1px); }
+/* Pinned, the track takes the height left under the heading; lanes share it by their number of rows. */
+.jr.pin .jr-hz { flex: 1 1 auto; max-height: 62rem; }
+.jr.pin .jr-lane { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; }
+.jr.pin .jr-lane:not(.ch, .wk) { flex-grow: 2; }
+.jr.pin .jr-lane.wk { flex-grow: 1.5; }
+.jr-skip { position: absolute; left: -200vw; top: 0; z-index: 3; padding: .5rem .9rem; background: #000; color: var(--fg); font-size: .9rem; font-weight: 500; border: 1px solid var(--edge); border-radius: 8px; }
+.jr-skip:focus { left: auto; right: 0; }
+
+/* ---------- desktop: the pinned track, edge to edge ---------- */
+.jr-hz { display: none; position: relative; margin-inline: calc(-1 * var(--pad)); --band: clamp(3.1rem, 7vh, 3.75rem); --rh: clamp(2.4rem, 6.4vh - .4rem, 3.75rem); --lp: clamp(.3rem, 1.6vh - .5rem, 1rem); --u: max(13rem, 13.5vw); --tx: 0px; --ph: 0px; --phx: 0px; }
+.jr-band { height: var(--band); }
+.jr-clip { position: relative; overflow: clip; }
+.jr-slice { position: relative; width: calc(var(--units) * var(--u)); transform: translate3d(var(--tx), 0, 0); }
+
+/* Gridlines: one per year, one per month inside 2026, none in the squeezed years (hatched instead). */
+.jr-grid, .jr-play { position: absolute; top: var(--band); bottom: 0; left: 0; right: 0; overflow: clip; pointer-events: none; }
+.jr-grid .jr-slice { height: 100%; }
+.jr-grid i { position: absolute; top: 0; bottom: 0; left: calc(var(--x) * var(--u)); width: 1px; background: #232a37; }
+.jr-grid i.m { background: #12161e; }
+.jr-gap { position: absolute; top: 0; bottom: 0; left: calc(var(--a) * var(--u)); width: calc(var(--w) * var(--u)); background: repeating-linear-gradient(-55deg, #10141c 0 1px, transparent 1px 9px); }
+
+/* Axis: years on the first line, the months of 2026 on the second. */
+.jr-axis { border-bottom: 1px solid var(--edge); }
+.jr-axis .jr-slice { height: 2.75rem; }
+.jr-axis .jr-slice span { position: absolute; top: .1rem; left: calc(var(--x) * var(--u)); padding-left: .45rem; font-size: .875rem; font-weight: 600; line-height: 1.2; color: var(--text); white-space: nowrap; }
+.jr-axis .jr-slice .mo { top: 1.45rem; font-weight: 500; color: var(--muted); }
+.jr-axis .jr-slice .end { padding: 0 .45rem 0 0; transform: translateX(-100%); color: var(--fg); }
+
+/* Playhead: the line runs behind the lanes (blocks cover it, their fill edge marks the same spot) and the
+   label above it prints the year, and the month inside 2026. */
+.jr-play { top: 0; z-index: 0; }
+.jr-line { position: absolute; top: calc(var(--band) - .5rem); bottom: 0; left: var(--phx); width: 2px; margin-left: -1px; background: #fff; }
+.jr-now { position: absolute; left: 0; bottom: calc(100% - var(--band) + .75rem); transform: translateX(var(--nx, 0px)); display: flex; align-items: baseline; gap: .45rem; white-space: nowrap; line-height: 1; color: var(--fg); }
+.jr-now b { font-size: 2.5rem; font-weight: 600; letter-spacing: -.035em; }
+.jr-now span { font-size: 1.35rem; font-weight: 500; color: var(--text); }
+.jr-now span:empty { display: none; }
+
+/* Lanes: no names; a hairline between them is all the structure they need. */
+.jr-lane { position: relative; z-index: 1; border-bottom: 1px solid var(--line); }
+.jr-lane .jr-clip { padding: var(--lp) 0; }
+.jr-row { position: relative; height: var(--rh); }
+.jr-row + .jr-row { margin-top: .45rem; }
+.jr-lab { position: relative; z-index: 1; display: grid; row-gap: 2px; padding: 0 .7rem; line-height: 1.2; white-space: nowrap; transform: translateX(var(--sx, 0px)); transition: opacity .2s; }
+.jr-lab b { display: flex; align-items: center; font-size: .9375rem; font-weight: 600; color: var(--fg); }
+.jr-lab > span { font-size: .875rem; font-weight: 500; color: var(--tint-c); }
+/* A label the viewport edge would cut (JS adds .cut) fades out instead; labels are never shown clipped. */
+.jr-lab.cut { opacity: 0; }
+.jr-sec .jr-hz a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- durations ----------
+   --fx is how much of the block lies behind the playhead, in px. ::before is the fill up to there. */
+.jr-seg { --fx: clamp(0px, calc(var(--ph) - var(--a) * var(--u)), calc(var(--w) * var(--u))); position: absolute; top: 0; bottom: 0; left: calc(var(--a) * var(--u)); width: calc(var(--w) * var(--u) - 2px); display: flex; align-items: center; isolation: isolate; background: var(--bg-c); border: 1px solid color-mix(in srgb, var(--edge-c) 45%, transparent); border-inline: 3px solid var(--edge-c); border-radius: 3px; transition: border-color .2s; }
+.jr-seg::before { content: ""; position: absolute; inset: 0; z-index: 0; background-color: var(--fill-c); clip-path: inset(0 calc(100% - var(--fx)) 0 0); }
+.jr-seg:hover { border-color: #fff; }
+/* A block too short for its label, or marked .side: the label sits just after the end cap (JS adds .out). */
+.jr-seg.out .jr-lab { position: absolute; left: 100%; margin-left: .35rem; }
+/* Still going: no end cap, an arrow instead. */
+.jr-seg.open { border-right: 0; border-radius: 3px 0 0 3px; }
+.jr-arw { position: absolute; left: 100%; top: -1px; bottom: -1px; width: .8rem; background: var(--edge-c); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+/* The Erasmus+ label, beside its block, sits on a solid chip of THI's darkest tone. */
+.jr-seg.thi .jr-lab { margin-left: .4rem; padding: .3rem .55rem; border-radius: 2px; background: var(--chip); }
+
+/* ---------- school: like Erasmus+ ----------
+   One continuous bar per school, in the school's colours, its mark repeated along it. The name sits straight on
+   the bar, like the handball clubs, and the marks start after it. They drift a little slower than the track as
+   you scroll (scroll-linked) and light up behind the playhead. */
+.jr-seg.cal { --bg-c: var(--cal-bg); --fill-c: var(--cal); --edge-c: var(--cal-edge); --tint-c: var(--cal-tint); --chip: var(--cal-chip); }
+.jr-seg.cal::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, #6680c8 var(--fx), #1a2a5c var(--fx)); -webkit-mask: url(/assets/logos/calderon-tile.png) calc(var(--tx) * -.08) 50% / auto 68% repeat-x, var(--holes); -webkit-mask-composite: source-in; mask: url(/assets/logos/calderon-tile.png) calc(var(--tx) * -.08) 50% / auto 68% repeat-x, var(--holes); mask-composite: intersect; }
+/* UPT: the T block is ::after, the grey letters .jr-pat, so the mark keeps its two colours. */
+.jr-seg.upt { --bg-c: var(--upt-bg); --fill-c: var(--upt); --edge-c: var(--upt-edge); --tint-c: var(--upt-tint); --chip: var(--upt-chip); }
+.jr-seg.upt::after, .jr-seg.upt .jr-pat { content: ""; position: absolute; inset: 0; z-index: 0; -webkit-mask: var(--m) calc(var(--tx) * -.08) 50% / auto 58% repeat-x, var(--holes); -webkit-mask-composite: source-in; mask: var(--m) calc(var(--tx) * -.08) 50% / auto 58% repeat-x, var(--holes); mask-composite: intersect; }
+.jr-seg.upt::after { --m: url(/assets/logos/upt-block.svg); background: linear-gradient(90deg, #5a5fd0 var(--fx), #1e2068 var(--fx)); }
+.jr-seg.upt .jr-pat { --m: url(/assets/logos/upt-letters.svg); background: linear-gradient(90deg, var(--upt-grey) var(--fx), #2c2d38 var(--fx)); }
+/* The trace: a line under the degree that grows with the playhead, its head a glowing cursor. */
+.jr-trace { position: absolute; left: calc(var(--a) * var(--u)); bottom: -.3rem; height: 2px; width: clamp(0px, calc(var(--ph) - var(--a) * var(--u)), calc(var(--w) * var(--u))); background: linear-gradient(90deg, rgba(122, 126, 232, .25), var(--upt-edge) 18rem); }
+.jr-trace i { position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; background: var(--upt-edge); box-shadow: 0 0 10px 2px rgba(122, 126, 232, .5); }
+/* Graduation, right after the degree ends: the grade ring and its label. */
+.jr-pt.grad { --tint-c: #7dffa8; margin-left: .55rem; }
+/* The burst may leave the lane for a moment: the study lane clips 2.5rem further out, and the ring sits above its label. */
+.jr-lane.st .jr-clip { overflow-clip-margin: 2.5rem; }
+.jr-pt.grad .grade { z-index: 2; }
+
+/* Erasmus+ at THI: THI's blues and its signet repeated along the block. The signets drift a little slower than the
+   track as you scroll (scroll-linked, nothing moves on its own), and light up behind the playhead. */
+.jr-seg.thi { --bg-c: var(--thi-dawn); --fill-c: var(--thi-fill); --edge-c: var(--thi); --tint-c: var(--thi-tint); --chip: var(--thi-night); }
+.jr-seg.thi::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, #3d8ff0 var(--fx), #123f78 var(--fx)); -webkit-mask: url(/assets/logos/thi-signet.svg) calc(var(--tx) * -.08) 50% / auto 52% repeat-x; mask: url(/assets/logos/thi-signet.svg) calc(var(--tx) * -.08) 50% / auto 52% repeat-x; }
+/* The branch: a bracket from the degree above down to the semester abroad, out in March, back in July. */
+.jr-lane.st .jr-row + .jr-row { margin-top: .85rem; }
+.jr-fork { position: absolute; left: calc(var(--a) * var(--u)); width: calc(var(--w) * var(--u) - 2px); top: -.85rem; height: .85rem; border: 2px solid var(--thi); border-bottom: 0; border-radius: .85rem .85rem 0 0; }
+
+/* ---------- work: time cards ----------
+   Each employer in its own colours, its logo as the name, square corners and a heavy clock-in edge. */
+.jr-lane.wk .jr-row { height: calc(var(--rh) + .55rem); }
+.jr-seg.wk { --bg-c: var(--c-bg); --fill-c: var(--c-fill); --edge-c: var(--c); --tint-c: var(--c-tint); border-radius: 0; border-left-width: 5px; border-right-width: 1px; }
+.jr-seg.wk.opswat { --c: var(--opswat); --c-fill: var(--opswat-fill); --c-bg: var(--opswat-bg); --c-tint: var(--opswat-tint); }
+.jr-seg.wk.wolt { --c: var(--wolt); --c-fill: var(--wolt-fill); --c-bg: var(--wolt-bg); --c-tint: var(--wolt-tint); }
+.jr-seg.wk.atos { --c: var(--atos); --c-fill: var(--atos-fill); --c-bg: var(--atos-bg); --c-tint: var(--atos-tint); }
+.jr-seg.wk.open { border-right: 0; }
+.jr-lab.wl .wh { display: flex; align-items: center; gap: .55rem; min-height: 1.2rem; }
+.jr-lab.wl .wh > span { font-size: .875rem; font-weight: 500; color: var(--tint-c); }
+/* Atos, the current job: a status light that comes on when the playhead clocks in. */
+.live { flex: none; width: .55rem; height: .55rem; border-radius: 50%; background: #2a3550; transition: background .3s, box-shadow .3s; font-style: normal; }
+.live.on { background: #6cb4ff; box-shadow: 0 0 0 3px rgba(0, 115, 230, .45); }
+
+/* ---------- handball ----------
+   Poli violet with the club's crest repeated in a tonal violet, deep ahead of the playhead and full violet behind.
+   SCM years show the lion from the SCM Poli crest, CSU years the CSU crest. */
+.jr-seg.hb { --bg-c: var(--hb-deep); --fill-c: var(--hb); --edge-c: var(--hb-tint); --tint-c: var(--hb-text); }
+/* Patterns stay clear of the labels: --h1b is the first label's right edge, --h2a and --h2b the second's span. */
+.jr-seg.hb, .jr-seg.crs, .jr-seg.cal, .jr-seg.upt { --holes: linear-gradient(90deg, transparent var(--h1b, 0px), #000 calc(var(--h1b, 0px) + 1.5rem), #000 calc(var(--h2a, 99999px) - 1.5rem), transparent var(--h2a, 99999px), transparent var(--h2b, 99999px), #000 calc(var(--h2b, 99999px) + 1.5rem)); }
+.jr-seg.hb::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, #6c3ab3 var(--fx), #2b1650 var(--fx)); -webkit-mask: var(--mark) calc(var(--tx) * -.05) 50% / auto var(--mark-h) repeat-x, var(--holes); -webkit-mask-composite: source-in; mask: var(--mark) calc(var(--tx) * -.05) 50% / auto var(--mark-h) repeat-x, var(--holes); mask-composite: intersect; }
+.jr-seg.scm { --mark: url(/assets/logos/scm-mark.png); --mark-h: 76%; }
+/* The lion is thin line art, so it gets a stronger tone than the CSU crest (whose solid field carries it) to read
+   as clearly. */
+.jr-seg.scm::after { background: linear-gradient(90deg, #8a5bd2 var(--fx), #3e2373 var(--fx)); }
+.jr-seg.csu { --mark: url(/assets/logos/csu-mark.png); --mark-h: 80%; }
+/* The armband: a white band around the bar at 2024, with the C; the captain's label follows it. */
+.jr-arm { position: absolute; z-index: 1; top: -1px; bottom: -1px; left: calc(var(--at) * var(--u)); width: 1.3rem; display: grid; place-items: center; background: #fff; color: var(--hb); font-size: .875rem; font-weight: 700; font-style: normal; line-height: 1; }
+.jr-lab.cap { position: absolute; top: 0; bottom: 0; left: calc(var(--at) * var(--u) + 1.3rem); align-content: center; }
+
+/* ---------- courses ----------
+   Lime pills printed with a guilloche after the label, lit behind the playhead, each with its hexagon badge. */
+.jr-seg.crs { --bg-c: var(--cr-bg); --fill-c: var(--cr-fill); --edge-c: var(--cr-edge); --tint-c: var(--cr-tint); top: 6%; bottom: 6%; border: 1.5px solid var(--cr-edge); border-radius: 999px; overflow: hidden; }
+.jr-seg.crs::before { border-radius: inherit; }
+.jr-seg.crs::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, #4f6a17 var(--fx), #222d0b var(--fx)); -webkit-mask: url(/assets/logos/guilloche.svg) 0 50% / auto 86% repeat-x, var(--holes); -webkit-mask-composite: source-in; mask: url(/assets/logos/guilloche.svg) 0 50% / auto 86% repeat-x, var(--holes); mask-composite: intersect; }
+.jr-seg.crs .ci { position: absolute; z-index: 1; left: .15rem; top: 50%; transform: translateY(-50%); }
+.jr-seg.crs .jr-lab { padding-left: calc(var(--ci) + .55rem); }
+.jr-seg.crs.out { overflow: visible; }
+.jr-seg.crs.out .jr-lab { padding-left: .1rem; }
+.jr-seg.crs:hover { border-color: #fff; }
+
+/* ---------- single moments ---------- */
+.jr-pt { position: absolute; top: 0; bottom: 0; left: calc(var(--x) * var(--u)); display: flex; align-items: center; }
+.jr-pt.st { --edge-c: var(--upt-edge); --tint-c: var(--upt-tint); margin-left: -8px; }
+.jr-pt.cr { --tint-c: var(--cr-tint); margin-left: calc(var(--ci) / -2); }
+.jr-pt .dm { flex: none; width: 14px; height: 14px; margin: 0 1px; transform: rotate(45deg); border: 2px solid var(--edge-c); border-radius: 2px; background: #000; transition: background .25s; }
+.jr-pt .dm.on { background: var(--edge-c); }
+.jr-pt .jr-lab { padding: 0 .5rem; }
+.jr-pt:hover .jr-lab b, .jr-md:hover b, .jr-ch:hover b { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Handball medal: its award in June of its year, label to the right. */
+.jr-md, .jr-ch { --tint-c: var(--text); position: absolute; top: 0; bottom: 0; left: calc(var(--x) * var(--u)); margin-left: calc(var(--ic) / -2); display: flex; align-items: center; }
+.jr-md .jr-lab, .jr-ch .jr-lab { padding: 0 0 0 .5rem; }
+/* Labels that float on the track sit on a black patch, so the playhead line passes behind them, not through them. */
+.jr-md .jr-lab, .jr-ch .jr-lab, .jr-pt .jr-lab, .jr-seg.out .jr-lab { background: #000; border-radius: 3px; }
+.jr-md .jr-lab, .jr-ch .jr-lab, .jr-pt .jr-lab { padding-right: .4rem; }
+.jr-seg.out .jr-lab { padding: 0 .4rem 0 .1rem; }
+/* Chess: a second rook sits at its own month, its distance taken from the time scale. */
+.jr-ch .aw + .aw { margin-left: calc((var(--x2) - var(--x)) * var(--u) - var(--ic)); }
+
+/* ---------- phones, short viewports, reduced motion: year groups with rails ---------- */
+.jv { display: grid; grid-template-columns: .75rem .45rem .75rem 1.1rem minmax(0, 1fr); max-width: 64rem; margin-top: 1.5rem; }
+.jv-rail { grid-column: 1; position: relative; border-radius: 99px; }
+/* Handball rail: violet, a mark repeated down it; CSU is one rail, with a white armband where the captaincy starts. */
+.jv-rail.hb { overflow: hidden; background: var(--hb); box-shadow: inset 0 0 0 1px var(--hb-tint); margin-top: 1.5rem; }
+.jv-rail.hb + .jv-rail.hb { margin-top: .9rem; }
+.jv-rail.hb::after { content: ""; position: absolute; inset: 0; background: #8a5bd0; -webkit-mask: var(--mark) 50% 0 / 90% auto repeat-y; mask: var(--mark) 50% 0 / 90% auto repeat-y; }
+.jv-rail.scm { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='22'%3E%3Ccircle cx='5' cy='11' r='2.2' fill='%23000'/%3E%3C/svg%3E"); }
+.jv-rail.csu { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='22'%3E%3Cpath d='M2 7h6v5.5L5 16l-3-3.5z' fill='%23000'/%3E%3C/svg%3E"); }
+.jv-arm { grid-column: 1; align-self: start; z-index: 1; height: .45rem; margin-top: 1.05rem; background: #fff; border-radius: 1px; }
+/* School rails: the Calderon crest down the high school rail; UPT's mark down the degree rail, which fills with
+   indigo and lights its marks down to the reading line. */
+.jv-rail.cal, .jv-rail.upt { grid-column: 3; overflow: hidden; margin-top: .7rem; }
+.jv-rail.cal { background: var(--cal); box-shadow: inset 0 0 0 1px var(--cal-edge); }
+.jv-rail.cal::after { content: ""; position: absolute; inset: 0; background: #9db2ec; -webkit-mask: url(/assets/logos/calderon-v.png) 50% 0 / 86% auto repeat-y; mask: url(/assets/logos/calderon-v.png) 50% 0 / 86% auto repeat-y; }
+.jv-rail.upt { background: var(--upt-bg); box-shadow: inset 0 0 0 1px #5a5fd0; }
+.jv-rail.upt i, .jv-rail.upt b { position: absolute; inset: 0; }
+.jv-rail.upt i { background: var(--upt); clip-path: inset(0 0 calc((1 - var(--lit, 0)) * 100%) 0); }
+.jv-rail.upt b { background: linear-gradient(#d4d6ff calc(var(--lit, 0) * 100%), #3a3d8a calc(var(--lit, 0) * 100%)); -webkit-mask: url(/assets/logos/upt-v.svg) 50% 0 / 76% auto repeat-y; mask: url(/assets/logos/upt-v.svg) 50% 0 / 76% auto repeat-y; }
+.jv-rail.upt::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--lit, 0) * 100% - 4px); height: 8px; background: var(--upt-edge); box-shadow: 0 0 10px 2px rgba(122, 126, 232, .5); }
+
+.jv-y { grid-column: 5; padding: 1.5rem 0 .4rem; font-size: 1.5rem; line-height: 1.1; letter-spacing: -.02em; }
+.jv-it { grid-column: 5; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: .4rem; padding: .6rem 0; border-top: 1px solid var(--line); }
+.jv-it > * { grid-column: 2; }
+.jv-it .jv-mk { --ic: 2.25rem; grid-column: 1; grid-row: 1 / span 3; display: flex; align-items: flex-start; height: 2.25rem; }
+.jv-it .when { font-size: .875rem; font-weight: 500; color: var(--muted); }
+.jv-it b { font-weight: 500; color: var(--fg); }
+.jv-it .sub { font-size: .9375rem; color: var(--text); }
+.jv-it:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.jv-it.now .when { color: var(--atos-tint); }
+.jv-it .ci { margin: .2rem 0 0 .25rem; }
+.jv-it .grade { width: 2.4rem; height: 2.4rem; }
+.jv-it .grade .gv { font-size: .875rem; }
+/* Markers: small versions of the desktop shapes. */
+.mk { display: inline-block; flex: none; position: relative; margin-top: .3rem; font-style: normal; width: 1.75rem; height: 1.1rem; border-radius: 2px; }
+.mk::after { content: ""; position: absolute; inset: 0; }
+.mk.scm { width: 2.25rem; height: 1.5rem; margin-top: .1rem; background: var(--hb); box-shadow: inset 0 0 0 1px var(--hb-tint); }
+.mk.scm::after { background: #d9c6ff; -webkit-mask: url(/assets/logos/scm-mark.png) 50% 50% / auto 78% no-repeat; mask: url(/assets/logos/scm-mark.png) 50% 50% / auto 78% no-repeat; }
+.mk.csu { width: 2.25rem; height: 2.25rem; margin-top: 0; background: url(/assets/logos/csu-crest.webp) 50% 50% / contain no-repeat; }
+.mk.cal, .mk.upt { width: 2.25rem; height: 1.9rem; margin-top: 0; }
+.mk.cal { background: var(--cal); box-shadow: inset 0 0 0 1px var(--cal-edge); }
+.mk.cal::after { background: #fff; -webkit-mask: url(/assets/logos/calderon-mark.png) 50% 50% / auto 80% no-repeat; mask: url(/assets/logos/calderon-mark.png) 50% 50% / auto 80% no-repeat; }
+.mk.upt { background: var(--upt); box-shadow: inset 0 0 0 1px var(--upt-edge); }
+.mk.upt::after { background: #fff; -webkit-mask: url(/assets/logos/upt.svg) 50% 50% / auto 70% no-repeat; mask: url(/assets/logos/upt.svg) 50% 50% / auto 70% no-repeat; }
+
+.mk.thi { width: 2.25rem; height: 1.5rem; margin-top: .1rem; background: var(--thi-fill); box-shadow: inset 0 0 0 1px var(--thi); }
+.mk.thi::after { background: #fff; -webkit-mask: url(/assets/logos/thi-signet.svg) 50% 50% / auto 62% no-repeat; mask: url(/assets/logos/thi-signet.svg) 50% 50% / auto 62% no-repeat; }
+.mk.wk { width: 2.5rem; height: 1.6rem; margin-top: .05rem; border-radius: 0; background: var(--c-fill); border-left: 4px solid var(--c); }
+.mk.wk::after { background: #fff; -webkit-mask: var(--src) 50% 50% / 80% auto no-repeat; mask: var(--src) 50% 50% / 80% auto no-repeat; }
+.mk.wk.opswat { --c: var(--opswat); --c-fill: var(--opswat-fill); --src: url(/assets/logos/opswat-white.svg); }
+.mk.wk.wolt { --c: var(--wolt); --c-fill: var(--wolt-fill); --src: url(/assets/logos/wolt-word.png); }
+.mk.wk.atos { --c: var(--atos); --c-fill: var(--atos-fill); --src: url(/assets/logos/atos-white.png); }
+.mk.pt { width: .8rem; height: .8rem; margin: .45rem 0 0 .45rem; transform: rotate(45deg); border-radius: 2px; background: var(--upt-edge); }
+.mk.cap { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; margin-top: .1rem; border-radius: 3px; background: #fff; color: var(--hb); font-size: .875rem; font-weight: 700; line-height: 1; }
+
+@media (min-width: 640px) {
+  .jv-it { grid-template-columns: 2.75rem 11rem minmax(0, 1fr); align-items: baseline; }
+  .jv-it .when { grid-column: 2; grid-row: 1 / span 2; }
+  .jv-it b, .jv-it .sub { grid-column: 3; }
+  .jv-it .jv-mk { align-self: start; }
+}
+
+/* Desktop with room to pin, and motion allowed: the track replaces the year groups. */
+/* JS adds .flat when the stage does not fit the viewport height; the year groups take over then. */
+@media (min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .jr:not(.flat) .jr-hz { display: flex; flex-direction: column; }
+  .jr:not(.flat) .jv { display: none; }
+  .jr.pin .jr-stage > h2 { margin-bottom: .5rem; }
+}
+/* Big, tall screens: larger rows, type and icons so the stage is not a strip in the middle of the screen. */
+@media (min-width: 1700px) and (min-height: 1000px) {
+  .jr-sec { --ic: 2.75rem; --ci: 2rem; }
+  .jr-hz { --rh: clamp(3rem, 5.2vh, 4.5rem); --band: 4.5rem; }
+  .jr-lab b { font-size: 1.0625rem; }
+  .jr-lab > span, .jr-lab.wl .wh > span { font-size: 1rem; }
+  .jr-axis .jr-slice span { font-size: 1rem; }
+  .jr-axis .jr-slice { height: 3.1rem; }
+  .jr-axis .jr-slice .mo { top: 1.6rem; }
+  .aw .n { font-size: 1rem; }
+  .jr-now b { font-size: 3.5rem; }
+  .jr-now span { font-size: 1.6rem; }
+
+  .lg.opswat { width: 6.2rem; height: 1rem; }
+  .lg.wolt, .lg.atos { width: 3.4rem; height: 1.25rem; }
+  .jr-hz .grade { width: 3.4rem; height: 3.4rem; }
+  .jr-hz .grade .gv { font-size: 1.0625rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jv-rail.upt { --lit: 1; }
+}
+
+/* Popups: tones follow the shapes; awards, logos and the diploma inside them. */
+.panel.sport .top b { color: var(--hb-tint, #c3a6ff); }
+.panel.school .top b { color: var(--cal-tint, #b4c6f2); }
+.panel.study .top b { color: var(--upt-tint, #b9bbf7); }
+.panel.thi .top b { color: #7eb4f7; }
+.panel.course .top b { color: #bef264; }
+.panel.work.opswat .top b { color: #7fa6ff; }
+.panel.work.wolt .top b { color: #00c2e8; }
+.panel.work.atos .top b { color: #6fb1ff; }
+.panel .honours .aw, .panel .aw-p .aw { --ic: 2.25rem; }
+.panel .honours li { padding: .4rem 0; }
+.panel .aw-p { display: flex; align-items: center; gap: .75rem; }
+.panel .logos { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; margin: 1rem 0 .3rem; }
+.panel .logos img { display: block; width: auto; max-width: 100%; }
+.panel .logos .crest { height: 5.5rem; }
+.panel .logos .mark { height: 3.25rem; border-radius: 4px; }
+.panel .logos .word { height: 1.5rem; }
+.panel .logos .cal { height: 5.5rem; }
+.panel .thi-logo { width: 15rem; max-width: 100%; height: auto; margin: .9rem 0 .2rem; }
+
+/* The study lane's 2.5rem clip margin (for the graduation burst) also widened the page by 40px. Clip the section
+   horizontally so the burst still shows but the page never scrolls sideways. `clip` keeps the stage sticky. */
+.jr-sec { overflow-x: clip; }

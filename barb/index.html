@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://api.web3forms.com; form-action https://api.web3forms.com; base-uri 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Barb, Andrei Stolojan</title>
+<meta name="description" content="Barb, a self-hosted app by Andrei Stolojan that flags suspicious Gmail messages and explains each verdict.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://andreistolojan.me/barb/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Andrei Stolojan">
+<meta property="og:title" content="Barb, Andrei Stolojan">
+<meta property="og:description" content="A self-hosted app that flags suspicious Gmail messages and explains each verdict.">
+<meta property="og:url" content="https://andreistolojan.me/barb/">
+<meta property="og:image" content="https://andreistolojan.me/assets/og/barb.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="name" href="/">Andrei Stolojan</a>
+  <nav aria-label="Sections"><a href="/#about">About</a><a href="/#projects" aria-current="page">Projects</a><a href="/#path">Path</a><a href="/#certs">Certifications</a><a href="/#passions">Passions</a><a href="/#contact">Contact</a></nav>
+  <a class="btn primary" href="#cv">CV</a>
+</div></div>
+
+<main class="page">
+  <a class="crumb back r" href="/#projects">All projects</a>
+
+  <header class="dhead">
+    <div>
+      <h1 class="r">Barb</h1>
+      <p class="lead r" style="--d:.1s">Self-hosted app that flags suspicious Gmail messages and explains each verdict.</p>
+      <div class="actions r" style="--d:.2s">
+        <a class="btn primary ext" href="https://secure-inbox.app" target="_blank" rel="noopener">Open the live app</a>
+        <a class="btn ext" href="https://github.com/AndreiStolojan/Barb" target="_blank" rel="noopener">Source on GitHub</a>
+      </div>
+    </div>
+    <dl class="kv r" style="--d:.15s">
+      <dt>Started as</dt><dd>Bachelor thesis, SecureInbox, Politehnica University Timișoara</dd>
+      <dt>Grade</dt><dd>8.9/10, July 2026</dd>
+      <dt>Status</dt><dd>Live at <a class="ext" href="https://secure-inbox.app" target="_blank" rel="noopener">secure-inbox.app</a></dd>
+      <dt>Stack</dt><dd>Linux, Docker Compose, React, Node.js, Express, MongoDB, OAuth 2.0, Ollama</dd>
+    </dl>
+  </header>
+
+  <section id="screens">
+    <h2 class="r">Screens</h2>
+    <div class="shots wide">
+      <figure class="r"><img src="/assets/barb-inbox-details.webp" alt="Barb inbox with a flagged message open. The message body shows links disabled. Below it, scoring details list the rules that fired and what the AI model read." width="1440" height="900"><figcaption><b>A flagged message.</b> Links are disabled while you read. Below the message, the scoring details: which rules fired, how much each one added, and what the AI model read.</figcaption></figure>
+    </div>
+    <div class="shots two">
+      <figure class="r"><img src="/assets/barb-briefing.webp" alt="Barb briefing dashboard: messages that look like phishing, share of safe mail, flagged per day, and sender domains." width="1440" height="1010" loading="lazy"><figcaption><b>Briefing.</b> The last 30 days at a glance: how many messages look like phishing, flagged per day, and where they came from.</figcaption></figure>
+      <figure class="r" style="--d:.08s"><img src="/assets/barb-senders.webp" alt="Barb senders page with trusted and blocked lists and a form to add a rule." width="1440" height="900" loading="lazy"><figcaption><b>Senders.</b> Trust or block one address or a whole domain. Trusted senders get a lighter touch, blocked ones are always flagged.</figcaption></figure>
+    </div>
+    <div class="shots three">
+      <figure class="r"><img src="/assets/barb-mobile-briefing.webp" alt="Barb briefing on a phone" width="390" height="844" loading="lazy"><figcaption><b>Phone.</b> Briefing.</figcaption></figure>
+      <figure class="r" style="--d:.06s"><img src="/assets/barb-mobile-inbox.webp" alt="Barb inbox on a phone" width="390" height="844" loading="lazy"><figcaption>Inbox.</figcaption></figure>
+      <figure class="r" style="--d:.12s"><img src="/assets/barb-mobile-message.webp" alt="A flagged message on a phone" width="390" height="844" loading="lazy"><figcaption>A message.</figcaption></figure>
+    </div>
+    <div class="shots">
+      <figure class="r"><img src="/assets/barb-mac-app.webp" alt="Barb Mac app sign-in window with the tagline See the risk. Keep moving." width="1600" height="1025" loading="lazy"><figcaption><b>Mac app.</b> The sign-in screen of the desktop build.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="build">
+    <h2 class="r">How it is built</h2>
+    <div class="prose cols r">
+      <p>Everything runs in <b>Docker Compose on Linux</b>: a React front end, a Node.js and Express API, and MongoDB. Gmail access goes through <b>OAuth 2.0</b>. The AI part of each verdict comes from a model served by <b>Ollama</b>.</p>
+      <p>Mail comes in from Gmail, Barb runs its rules and asks the Ollama model, and the two together give the verdict.</p>
+      <p>It started as my bachelor thesis at Politehnica University Timișoara under the name SecureInbox, graded 8.9/10 in July 2026, and kept going as Barb.</p>
+    </div>
+  </section>
+
+  <footer><span><a class="u" href="/">Andrei Stolojan</a>, 2026</span><span><a class="u arr" href="/eclipse/">Next project: Eclipse</a></span></footer>
+</main>
+
+<dialog class="dlg" id="cv" aria-labelledby="cv-t"><div class="panel" tabindex="-1">
+  <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+  <div class="top"><span>PDF</span><b>Not online yet</b></div>
+  <h2 id="cv-t">CV</h2>
+  <p>The PDF is not online yet. Until then: LinkedIn, or email me.</p>
+  <div class="links"><a class="btn ext" href="https://www.linkedin.com/in/andrei-stolojan" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="mailto:andreistolojan@gmail.com">Email me</a></div>
+</div></dialog>
+
+<script src="/js/site.js"></script>
+</body>
+</html>

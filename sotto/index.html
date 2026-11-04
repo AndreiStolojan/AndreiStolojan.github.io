@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://api.web3forms.com; form-action https://api.web3forms.com; base-uri 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Sotto, Andrei Stolojan</title>
+<meta name="description" content="Sotto, local Romanian and English dictation for macOS by Andrei Stolojan, where speech recognition runs on the Mac and nothing is sent to a server.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://andreistolojan.me/sotto/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Andrei Stolojan">
+<meta property="og:title" content="Sotto, Andrei Stolojan">
+<meta property="og:description" content="Local Romanian and English dictation for macOS. Speech recognition runs on the Mac, nothing is sent to a server.">
+<meta property="og:url" content="https://andreistolojan.me/sotto/">
+<meta property="og:image" content="https://andreistolojan.me/assets/og/sotto.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<div class="bar"><div class="in">
+  <a class="name" href="/">Andrei Stolojan</a>
+  <nav aria-label="Sections"><a href="/#about">About</a><a href="/#projects" aria-current="page">Projects</a><a href="/#path">Path</a><a href="/#certs">Certifications</a><a href="/#passions">Passions</a><a href="/#contact">Contact</a></nav>
+  <a class="btn primary" href="#cv">CV</a>
+</div></div>
+
+<main class="page">
+  <a class="crumb back r" href="/#projects">All projects</a>
+
+  <header class="dhead">
+    <div>
+      <h1 class="r">Sotto</h1>
+      <p class="lead r" style="--d:.1s">Local Romanian and English dictation for macOS. Double Fn starts recording, one Fn stops, and the transcript is pasted into the focused app.</p>
+      <div class="actions r" style="--d:.2s">
+        <a class="btn primary ext" href="https://github.com/AndreiStolojan/Sotto" target="_blank" rel="noopener">Source on GitHub</a>
+      </div>
+    </div>
+    <dl class="kv r" style="--d:.15s">
+      <dt>Platform</dt><dd>macOS</dd>
+      <dt>Languages</dt><dd>Romanian, English</dd>
+      <dt>Engines</dt><dd>Parakeet through FluidAudio, or Whisper through whisper.cpp, both on the Mac</dd>
+      <dt>Privacy</dt><dd>Nothing is sent to a server</dd>
+      <dt>Based on</dt><dd>VoiceInk v2.21 by Prakash Joshi</dd>
+      <dt>License</dt><dd>GPL v3</dd>
+    </dl>
+  </header>
+
+  <figure class="cover r">
+    <picture>
+      <source media="(min-width: 1400px)" srcset="/assets/sotto-banner.webp" width="1584" height="396">
+      <img src="/assets/sotto-cover.webp" alt="Sotto's dictation pill in the notch on a blue macOS wallpaper, twelve bars showing the microphone level." width="1200" height="627" fetchpriority="high">
+    </picture>
+  </figure>
+
+  <section id="how">
+    <h2 class="r">How it works</h2>
+    <div class="two-col">
+      <div class="prose r">
+        <p>Press <b>Fn twice</b> to start recording and <b>Fn once</b> to stop. Sotto transcribes the audio on the Mac, in Romanian or English, and pastes the text into whatever app has focus. No account, no server, no audio leaving the machine.</p>
+        <p>Recognition runs on one of two local engines: <b>Parakeet</b> through FluidAudio, or <b>Whisper</b> through whisper.cpp. The whole path: Fn twice to record, Parakeet or Whisper on the Mac, paste.</p>
+        <p>While it records, the notch on the MacBook becomes a pill with twelve bars that follow the microphone level. That pill is drawn by <a class="u" href="/eclipse/">Eclipse</a>, which Sotto reaches over a local socket; without Eclipse, Sotto shows its own recorder at the bottom of the screen.</p>
+        <p>A personal tool, built and used on one MacBook Air. The only screenshot that exists is the cover above.</p>
+      </div>
+      <figure class="pill r" style="--d:.1s"><div class="tile"><img class="strip" src="/assets/eclipse-dictation-recording.png" alt="The notch as a pill with twelve bars while Sotto records." width="484" height="116" loading="lazy"></div><figcaption>The recording pill, as Eclipse draws it in the notch.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="credit">
+    <h2 class="r">Credit and license</h2>
+    <div class="credit r">
+      <p>Sotto is a <b>modified version of <a class="ext" href="https://github.com/Beingpax/VoiceInk" target="_blank" rel="noopener">VoiceInk</a> v2.21 by Prakash Joshi</b>, released under GPL v3. Sotto is GPL v3 too.</p>
+      <p>Local engines and libraries: <a class="ext" href="https://github.com/FluidInference/FluidAudio" target="_blank" rel="noopener">FluidAudio</a> (Apache 2.0) runs <a class="ext" href="https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3" target="_blank" rel="noopener">Parakeet</a> (CC BY 4.0), <a class="ext" href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">whisper.cpp</a> (MIT) runs Whisper.</p>
+    </div>
+  </section>
+
+  <footer><span><a class="u" href="/">Andrei Stolojan</a>, 2026</span><span><a class="u arr" href="/homelab/">Next project: Homelab</a></span></footer>
+</main>
+
+<dialog class="dlg" id="cv" aria-labelledby="cv-t"><div class="panel" tabindex="-1">
+  <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+  <div class="top"><span>PDF</span><b>Not online yet</b></div>
+  <h2 id="cv-t">CV</h2>
+  <p>The PDF is not online yet. Until then: LinkedIn, or email me.</p>
+  <div class="links"><a class="btn ext" href="https://www.linkedin.com/in/andrei-stolojan" target="_blank" rel="noopener">LinkedIn</a><a class="btn" href="mailto:andreistolojan@gmail.com">Email me</a></div>
+</div></dialog>
+
+<script src="/js/site.js"></script>
+</body>
+</html>

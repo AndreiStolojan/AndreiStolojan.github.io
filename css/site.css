@@ -1,0 +1,398 @@
+/* Blue hour, v3.
+   Black page, white text, cyan for work and actions, coral for study. One static navy glow at the top with faint
+   contour lines and grain inside it. Nothing animates on its own; the only motion is one-shot reveals, hover and
+   focus transitions, popup transitions, and the path's spine, which follows the scroll position.
+
+   Type: one family, IBM Plex Sans, self-hosted from assets/fonts. Hierarchy comes from size, weight and tone only.
+   No italics, no second face, no monospace labels.
+
+   Tone: --fg for headings, names and values; --text for running copy; --muted for dates, labels and notes.
+   All three sit above 7:1 on black and on the glow. Nothing is set below .875rem (14px).
+
+   Layout: full width with fluid margins (--pad). Text keeps a readable measure through max-width on paragraphs,
+   never on the page. */
+
+@font-face {
+  font-family: "Plex Sans"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url(/fonts/plex-sans-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Plex Sans"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url(/fonts/plex-sans-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --bg: #000; --fg: #fff; --text: #d7dbe3; --muted: #a2abba; --line: #1e2430; --edge: #313a4a; --well: #0b0d12;
+  --cyan: #22d3ee; --cyan-ink: #04161a; --coral: #fb7185;
+  --sans: "Plex Sans", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --pad: clamp(1.25rem, 4.5vw, 7rem);    /* 20px on a phone, 65px at 1440, 112px at 2560 */
+  --gap: clamp(1.5rem, 3vw, 4rem);        /* column gap inside sections */
+  --measure: 62ch;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --arrow-ne: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3.5 1.5h7v7M10.5 1.5l-9 9' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --arrow-e: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 6h9M6.5 2l4 4-4 4' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+/* Larger base size on big screens, so density stays similar instead of everything shrinking into the corners. */
+@media (min-width: 1700px) { html { font-size: 17px; } }
+@media (min-width: 2300px) { html { font-size: 18px; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scrollbar-gutter: stable; background: var(--bg); }
+body { position: relative; color: var(--fg); font: 400 1rem/1.55 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: clip; min-height: 100vh; font-variant-numeric: tabular-nums; }
+/* Backdrop, two static layers at the top of the page.
+   ::before is the navy glow. ::after lays contour lines and grain over it, masked to the same region. */
+body::before, body::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 68rem; pointer-events: none; }
+body::before { background: radial-gradient(70% 60% at 72% 0%, rgba(14, 40, 90, .55), transparent 70%); }
+body::after { background: url(/assets/contours.svg) right top / max(100%, 110rem) auto no-repeat, url(/assets/grain.svg) 0 0 / 200px 200px repeat; -webkit-mask: radial-gradient(75% 62% at 72% 0%, #000 20%, transparent 100%); mask: radial-gradient(75% 62% at 72% 0%, #000 20%, transparent 100%); }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; height: auto; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+::selection { background: var(--cyan); color: var(--cyan-ink); }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 3px; }
+p { color: var(--text); }
+b, strong { color: var(--fg); font-weight: 500; }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+
+/* Cross-document page transition where the browser supports it. Progressive, no JS. */
+@view-transition { navigation: auto; }
+
+/* Arrows are drawn as masked SVG so they look the same in every browser and never fall back to a system glyph.
+   .ext marks a link that opens a new tab (north-east arrow). .arr marks a link to another page or popup. */
+.ext::after, .arr::after, .back::before { content: ""; display: inline-block; width: .62em; height: .62em; background: currentColor; -webkit-mask: var(--arrow-ne) center / contain no-repeat; mask: var(--arrow-ne) center / contain no-repeat; vertical-align: -.02em; transition: transform .25s var(--ease); }
+.ext::after { margin-left: .4em; }
+.arr::after { margin-left: .4em; -webkit-mask-image: var(--arrow-e); mask-image: var(--arrow-e); }
+.back::before { margin-right: .45em; -webkit-mask-image: var(--arrow-e); mask-image: var(--arrow-e); transform: scaleX(-1); }
+.ext:hover::after { transform: translate(2px, -2px); }
+.arr:hover::after { transform: translateX(3px); }
+.back:hover::before { transform: scaleX(-1) translateX(3px); }
+
+/* Top bar */
+.bar { position: sticky; top: 0; z-index: 5; background: rgba(0, 0, 0, .78); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.bar .in { padding: 0 var(--pad); min-height: 3.75rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.bar .name { font-weight: 600; font-size: 1.05rem; letter-spacing: -.01em; }
+.bar nav { display: flex; gap: 1.5rem; margin-left: auto; font-size: .9rem; font-weight: 500; color: var(--muted); }
+.bar nav a { transition: color .2s; padding: .2rem 0; }
+.bar nav a:hover { color: var(--fg); }
+.bar nav a[aria-current="page"] { color: var(--fg); }
+/* Language switch (i18n.js): the four codes as one segmented control, the page's language filled in white. */
+.bar .lang { display: flex; padding: 2px; border: 1px solid var(--edge); border-radius: 8px; font-size: .8rem; font-weight: 600; letter-spacing: .03em; }
+.bar .lang button { min-width: 2rem; min-height: 1.75rem; padding: 0 .35rem; border-radius: 6px; color: var(--muted); transition: color .2s, background .2s; }
+.bar .lang button:hover { color: var(--fg); }
+.bar .lang button[aria-pressed="true"] { background: var(--fg); color: #000; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 500; padding: .55rem 1rem; border-radius: 8px; border: 1px solid var(--edge); line-height: 1.4; white-space: nowrap; transition: border-color .2s, color .2s, box-shadow .2s, background .2s; }
+.btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.btn.primary { background: var(--cyan); border-color: var(--cyan); color: var(--cyan-ink); }
+.btn.primary:hover { color: var(--cyan-ink); box-shadow: 0 0 24px rgba(34, 211, 238, .35); }
+.btn.small { padding: .4rem .8rem; font-size: .875rem; }
+.btn[disabled] { opacity: .6; cursor: default; box-shadow: none; }
+
+/* Page frame: full width, fluid margins */
+.page { position: relative; padding: 0 var(--pad) 4rem; }
+section { padding-top: clamp(3.5rem, 6vw, 6rem); }
+h1, h2, h3, h4 { font-weight: 600; letter-spacing: -.02em; }
+h2 { font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.25rem); line-height: 1.1; padding-bottom: .8rem; margin-bottom: clamp(1.25rem, 2vw, 2rem); border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.2rem; line-height: 1.3; letter-spacing: -.01em; }
+
+/* Text links inside prose: underline grows in on hover. */
+.u { color: var(--fg); background: linear-gradient(var(--cyan), var(--cyan)) no-repeat 0 100% / 0 1px; padding-bottom: 1px; transition: background-size .3s var(--ease), color .2s; }
+.u:hover { background-size: 100% 1px; color: var(--cyan); }
+
+/* Hero: headline, one paragraph that carries the facts, actions; portrait at the right edge. On wide screens the
+   paragraph moves beside the headline as a third column, so the width is used instead of left empty. */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "intro portrait" "sum portrait"; column-gap: var(--gap); align-items: center; padding: clamp(2.5rem, 6vw, 6.5rem) 0 clamp(2.5rem, 4vw, 4rem); }
+.hero .intro { grid-area: intro; align-self: end; }
+.hero .sum { grid-area: sum; align-self: start; }
+.hero .portrait { grid-area: portrait; }
+.hero h1 { font-size: clamp(2.75rem, 5vw + .5rem, 6.75rem); line-height: 1; letter-spacing: -.03em; max-width: 11em; }
+.hero h1 .ln { display: block; overflow: hidden; padding-bottom: .1em; margin-bottom: -.1em; }
+.hero h1 .ln span { display: inline-block; transform: translateY(110%); transition: transform .9s var(--ease); transition-delay: var(--d, 0s); }
+.hero h1.in .ln span { transform: none; }
+.hero .lead { font-size: clamp(1.1rem, 1rem + .4vw, 1.45rem); line-height: 1.5; margin-top: 1.5rem; max-width: 34em; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2rem; }
+/* Portrait: the studio photo keeps its white background inside a crisp tile, so the white is a frame, not a leak. */
+.portrait { width: clamp(12rem, 22vw, 26rem); aspect-ratio: 4 / 5; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 40px 90px -30px rgba(14, 40, 90, .9), 0 0 0 1px rgba(255, 255, 255, .08); justify-self: end; }
+.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; transition: transform .8s var(--ease); }
+.portrait:hover img { transform: scale(1.025); }
+
+/* About: three short paragraphs in three columns on a laptop, two on a tablet, one on a phone. */
+.about { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem var(--gap); }
+.about p { font-size: 1.05rem; max-width: 40em; }
+
+/* Projects: a list of full-width rows: thumbnail, name and summary, stack, links. On wide screens the list
+   becomes two columns of rows, so nothing stretches across 2000px with a hole in the middle. */
+.projects { list-style: none; display: grid; border-bottom: 1px solid var(--line); }
+.proj { position: relative; display: grid; grid-template-columns: clamp(12rem, 20vw, 22rem) minmax(0, 1fr) auto; gap: 1rem var(--gap); align-items: start; padding: 1.75rem 0; border-top: 1px solid var(--line); }
+.proj .thumb { display: block; aspect-ratio: 1200 / 627; border-radius: 10px; overflow: hidden; background: var(--well); outline: 1px solid rgba(255, 255, 255, .08); outline-offset: -1px; transition: outline-color .25s; }
+.proj .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; transition: transform .8s var(--ease); }
+.proj:hover .thumb { outline-color: rgba(255, 255, 255, .22); }
+.proj:hover .thumb img { transform: scale(1.02); }
+.proj .thumb.placeholder { display: grid; aspect-ratio: 1200 / 627; }
+.proj h3 { font-size: 1.4rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .75rem; }
+.proj h3 a::after { content: ""; position: absolute; inset: 0; }            /* the whole row opens the page */
+.proj h3 .kind { font-size: .9rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.proj:hover h3 a, .proj h3 a:focus-visible { color: var(--cyan); }
+.proj .info p { margin-top: .4rem; max-width: 38em; }
+.proj .info .stack { font-size: .875rem; color: var(--muted); margin-top: .6rem; max-width: 38em; }
+.proj .lk { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; justify-self: end; }
+
+/* Path: one spine, oldest at the top, the current role at the bottom. The spine fills as you scroll (JS sets
+   --p on the list) and each node lights up when the reading line passes it. Work nodes are solid cyan, study
+   nodes are coral rings, and the kind is also written out, so colour is never the only signal. */
+.timeline { list-style: none; position: relative; --col: 9rem; --p: 0; }
+.timeline::before, .timeline::after { content: ""; position: absolute; top: .9rem; bottom: .9rem; left: calc(var(--col) + 1rem); width: 2px; margin-left: -1px; background: var(--line); border-radius: 1px; }
+.timeline::after { background: linear-gradient(var(--cyan), var(--coral) 55%, var(--cyan)); transform: scaleY(var(--p)); transform-origin: top; transition: transform .2s linear; }
+.ev { position: relative; display: grid; grid-template-columns: var(--col) 2rem minmax(0, 1fr); column-gap: 1rem; align-items: start; padding: 1.1rem 0; }
+.ev + .ev { border-top: 1px solid var(--line); }
+.ev .when { font-weight: 500; line-height: 1.3; padding-top: .15rem; }
+.ev .when small { display: block; font-size: .875rem; font-weight: 500; color: var(--coral); margin-top: 2px; }
+.ev.work .when small { color: var(--cyan); }
+.ev .node { position: relative; z-index: 1; justify-self: center; width: 14px; height: 14px; margin-top: .45rem; border-radius: 50%; background: var(--bg); border: 2px solid var(--edge); transition: border-color .35s, background .35s, box-shadow .35s; }
+.ev.on .node { border-color: var(--coral); }
+.ev.work.on .node { border-color: var(--cyan); background: var(--cyan); }
+.ev.now .node { width: 18px; height: 18px; margin-top: .35rem; }
+.ev.now.on .node { box-shadow: 0 0 0 5px rgba(34, 211, 238, .22); }
+.ev .what { display: grid; grid-template-columns: minmax(0, 1fr); gap: .15rem 2.5rem; }
+.ev h3 { font-size: 1.2rem; }
+.ev h3 a::after { content: ""; position: absolute; inset: 0; border-radius: 6px; }
+.ev h3 a { transition: color .2s; }
+.ev:hover h3 a { color: var(--coral); }
+.ev.work:hover h3 a { color: var(--cyan); }
+.ev .where { color: var(--text); }
+.ev p { color: var(--muted); max-width: 44em; margin-top: .25rem; }
+
+/* Certifications: four across, each with its own hairline */
+.certs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem var(--gap); }
+.cert { position: relative; padding-top: .9rem; border-top: 1px solid var(--line); }
+.cert .date { font-size: .875rem; font-weight: 500; color: var(--muted); }
+.cert h3 { margin-top: .35rem; }
+.cert h3 a::after { content: ""; position: absolute; inset: 0; }
+.cert:hover h3 a { color: var(--cyan); }
+.cert .org { margin-top: 2px; color: var(--text); }
+.cert p { font-size: .95rem; color: var(--muted); margin-top: 6px; }
+.cert .more { display: inline-block; font-size: .875rem; font-weight: 500; color: var(--muted); margin-top: .7rem; transition: color .2s; }
+.cert:hover .more { color: var(--cyan); }
+
+/* Passions: photo, handball, then chess and German in a third column */
+.pass { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem var(--gap); align-items: start; }
+.placeholder { aspect-ratio: 4 / 3; border: 1px dashed var(--edge); border-radius: 10px; display: grid; place-content: center; text-align: center; gap: 4px; color: var(--muted); font-size: .875rem; padding: 1rem; }
+.placeholder b { color: var(--text); font-weight: 500; }
+.pass .placeholder { max-width: 34rem; }
+.pass h3 { font-size: 1.5rem; }
+.pass .sub { margin-top: 6px; max-width: 34em; }
+.medals { list-style: none; margin-top: 1rem; max-width: 30rem; }
+.medals li { display: grid; grid-template-columns: 3rem 1fr; gap: 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--line); }
+.medals b { font-size: 1.4rem; font-weight: 600; color: var(--cyan); line-height: 1; letter-spacing: -.02em; }
+.medals b small { font-size: .9rem; font-weight: 500; color: var(--muted); margin-left: 1px; }
+.also { display: grid; gap: 1.25rem; max-width: 30rem; }
+.also div { padding-top: .75rem; border-top: 1px solid var(--line); }
+.also h4 { font-size: 1.1rem; }
+.also p { margin-top: 4px; max-width: 36em; }
+
+/* Contact: statement and links on the left, form on the right. Wide screens split the left into two columns. */
+.contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 2.5rem var(--gap); }
+.say { font-size: clamp(1.25rem, 1.05rem + .6vw, 1.7rem); line-height: 1.35; font-weight: 500; letter-spacing: -.01em; color: var(--fg); max-width: 24em; margin-bottom: 1.5rem; }
+.contact-form { max-width: 56rem; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem var(--gap); }
+.fields label:nth-of-type(3), .fields button, .fields .note { grid-column: 1 / -1; }
+form label { display: block; }
+form span.lbl { display: block; font-size: .9rem; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+form input, form textarea { width: 100%; background: rgba(255, 255, 255, .04); border: 1px solid var(--edge); border-radius: 8px; color: var(--fg); font: 1rem/1.5 var(--sans); padding: 10px 12px; transition: border-color .2s, box-shadow .2s; }
+form textarea { min-height: 9rem; resize: vertical; }
+form input:focus, form textarea:focus { outline: 0; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, .18); }
+form .err input, form .err textarea { border-color: var(--coral); }
+form .err input:focus, form .err textarea:focus { box-shadow: 0 0 0 3px rgba(251, 113, 133, .18); }
+form .msg { display: none; color: var(--coral); font-size: .875rem; margin-top: 6px; }
+form .err .msg { display: block; }
+form button { justify-self: start; margin-top: .25rem; }
+form .note { font-size: .875rem; color: var(--muted); }
+.done { padding: 1.5rem; border: 1px solid var(--cyan); border-radius: 10px; color: var(--text); animation: rise .5s var(--ease) both; }
+.done b { color: var(--fg); display: block; font-size: 1.3rem; font-weight: 600; margin-bottom: 4px; }
+.clinks a { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .85rem 0; border-top: 1px solid var(--line); font-size: 1.05rem; font-weight: 500; transition: color .2s; }
+.clinks a:last-child { border-bottom: 1px solid var(--line); }
+.clinks a span { color: var(--muted); font-size: .9rem; font-weight: 400; white-space: nowrap; transition: color .2s; }
+.clinks a:hover, .clinks a:hover span { color: var(--cyan); }
+
+footer { margin-top: clamp(4rem, 6vw, 6rem); padding-top: 1.5rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: .9rem; }
+footer a { color: var(--text); }
+footer a:hover { color: var(--cyan); }
+
+/* Detail pages (Barb, Eclipse, Sotto, Homelab) */
+.crumb { display: inline-flex; align-items: center; margin-top: 2rem; font-size: .9rem; font-weight: 500; color: var(--muted); transition: color .2s; }
+.crumb:hover { color: var(--cyan); }
+.dhead { padding: 2rem 0 2.5rem; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 2rem var(--gap); align-items: end; }
+.dhead h1 { font-size: clamp(2.5rem, 3.5vw + 1rem, 5rem); line-height: 1; letter-spacing: -.03em; }
+.dhead .lead { font-size: clamp(1.1rem, 1rem + .35vw, 1.35rem); line-height: 1.5; margin-top: 1rem; max-width: 34em; }
+.dhead .actions { margin-top: 1.5rem; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: .55rem 1.5rem; max-width: 40rem; }
+.kv dt { color: var(--muted); font-size: .9rem; font-weight: 500; padding-top: .1rem; }
+.kv dd { color: var(--fg); }
+.kv dd a { color: var(--cyan); }
+.kv dd a:hover { text-decoration: underline; text-underline-offset: 4px; }
+/* Cover image under the header: full width, cropped to a band so the page stays dense on tall viewports. */
+.cover { border-top: 1px solid var(--line); padding-top: 2.5rem; }
+.cover img { width: 100%; max-height: 38rem; object-fit: cover; object-position: 50% 0; border-radius: 14px; outline: 1px solid rgba(255, 255, 255, .08); outline-offset: -1px; }
+.shots { display: grid; gap: 2.5rem var(--gap); }
+.shots.two { grid-template-columns: 1fr 1fr; }
+.shots.three { grid-template-columns: repeat(3, 1fr); max-width: 48rem; }
+.shots.wide { max-width: 100rem; }
+.shots + .shots { margin-top: 2.5rem; }
+figure img { border-radius: 10px; outline: 1px solid rgba(255, 255, 255, .08); outline-offset: -1px; background: var(--well); }
+figcaption { font-size: .95rem; color: var(--muted); margin-top: .7rem; max-width: 40em; }
+figcaption b { color: var(--fg); font-weight: 500; }
+/* Notch renders: black panels on a navy tile, the way they sit on a dark desktop. Three across on a laptop. */
+.notches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem var(--gap); }
+.tile { display: grid; place-items: center; padding: clamp(1rem, 2.5vw, 2.5rem); border-radius: 10px; background: radial-gradient(90% 90% at 50% 0%, #121b2c, #090c12 85%); outline: 1px solid rgba(255, 255, 255, .08); outline-offset: -1px; }
+.tile img { outline: 0; background: none; border-radius: 0; width: 100%; max-width: 20rem; }
+.tile img.strip { max-width: 18rem; }
+.tile img.strip + img.strip { margin-top: 1rem; }
+.tile img.widget { max-width: 22rem; border-radius: 10px; }
+.prose { max-width: var(--measure); font-size: 1.05rem; }
+.prose p + p { margin-top: .9rem; }
+.prose ul { padding-left: 1.2em; color: var(--text); }
+.prose li + li { margin-top: .35rem; }
+/* A prose block that stands alone in a section flows into two columns on a laptop, so it uses the width. */
+@media (min-width: 1100px) { .prose.cols { max-width: none; columns: 2; column-gap: var(--gap); } .prose.cols p { break-inside: avoid; max-width: 40em; } .prose.cols p + p { margin-top: 0; } .prose.cols p { margin-bottom: .9rem; } }
+.two-col { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2.5rem var(--gap); align-items: start; }
+.two-col .placeholder { max-width: 26rem; }
+figure.pill { margin-top: 2rem; max-width: 30rem; }
+.two-col > figure.pill { margin-top: 0; }
+.credit { max-width: var(--measure); padding: 1.25rem 1.5rem; border: 1px solid var(--edge); border-radius: 10px; }
+.credit p + p { margin-top: .7rem; }
+.credit a { color: var(--cyan); }
+.credit a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Popups: native dialog, panel centred on desktop, bottom sheet on phones */
+.dlg { border: 0; padding: 0; background: transparent; width: 100%; height: 100%; max-width: none; max-height: none; color: var(--fg); }
+.dlg[open] { display: grid; place-items: center; }
+.dlg::backdrop { background: rgba(2, 6, 14, .76); }
+.panel { position: relative; width: min(42rem, 100% - 2rem); max-height: min(86vh, 100% - 2rem); overflow: auto; overscroll-behavior: contain; background: var(--well); border: 1px solid var(--edge); border-radius: 14px; padding: 1.75rem 2rem 2rem; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, .9); }
+.panel:focus { outline: 0; }
+.panel .top { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; font-size: .9rem; font-weight: 500; color: var(--muted); padding-right: 3rem; }
+.panel .top b { color: var(--coral); font-weight: 500; }
+.panel.work .top b { color: var(--cyan); }
+.panel h2 { font-size: 1.6rem; line-height: 1.2; border: 0; padding: 0; margin: .4rem 0 .9rem; }
+.panel h2 .where { display: block; font-size: 1.05rem; font-weight: 400; letter-spacing: 0; color: var(--text); margin-top: .25rem; }
+.panel p { font-size: 1rem; }
+.panel p + p { margin-top: .7rem; }
+.panel .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.4rem; }
+.panel figure { margin-top: 1.2rem; }
+.panel figure img { width: 100%; border-radius: 8px; }
+.panel .badge { display: flex; align-items: center; gap: 1rem; margin-top: 1.2rem; }
+.panel .badge img { width: 5.5rem; border-radius: 8px; }
+.panel .placeholder { aspect-ratio: auto; padding: 1.25rem; margin-top: 1.2rem; }
+.panel .x { position: absolute; top: 1rem; right: 1rem; width: 2.25rem; height: 2.25rem; display: grid; place-items: center; border-radius: 50%; color: var(--muted); border: 1px solid transparent; transition: color .2s, border-color .2s; }
+.panel .x:hover { color: var(--fg); border-color: var(--edge); }
+.panel .x svg { width: 14px; height: 14px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes dlg-in { from { opacity: 0; transform: translateY(14px) scale(.985); } }
+@keyframes dlg-out { to { opacity: 0; transform: translateY(10px) scale(.985); } }
+@keyframes fade { from { opacity: 0; } }
+.dlg[open] .panel { animation: dlg-in .28s var(--ease) both; }
+.dlg[open]::backdrop { animation: fade .28s ease both; }
+.dlg.closing .panel { animation: dlg-out .18s ease-in both; }
+.dlg.closing::backdrop { animation: fade .18s ease-in reverse both; }
+
+/* Scroll reveals: fade and rise once, staggered with --d. No blur filters. */
+.r { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .7s var(--ease); transition-delay: var(--d, 0s); }
+.r.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, ::backdrop { animation: none !important; transition: none !important; }
+  .r, .hero h1 .ln span { opacity: 1; transform: none; }
+  .timeline { --p: 1; }
+}
+
+/* Laptop and up (1400): each path entry spreads its title and summary across the row. */
+@media (min-width: 1400px) {
+  .ev .what { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); grid-template-rows: auto 1fr; align-items: baseline; }
+  .ev .what h3 { grid-column: 1; }
+  .ev .where { grid-column: 1; }
+  .ev p { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
+  .timeline { --col: 10rem; }
+}
+/* Wide (1700 and up): projects in two columns of rows, contact gets its third column. */
+@media (min-width: 1700px) {
+  .hero .lead { max-width: 36em; }
+  .projects { grid-template-columns: 1fr 1fr; column-gap: var(--gap); }
+  .proj { grid-template-columns: clamp(14rem, 14vw, 20rem) minmax(0, 1fr); padding: 2rem 0; }
+  .proj .lk { grid-column: 2; justify-self: start; margin-top: .25rem; }
+  .contact { grid-template-columns: minmax(0, .9fr) minmax(0, 1fr) minmax(0, 1.5fr); }
+  .contact .side { display: contents; }
+  .say { margin-bottom: 0; }
+}
+
+/* Very wide (2300 and up): the hero becomes headline, paragraph, portrait, side by side. */
+@media (min-width: 2300px) {
+  .hero { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "intro sum portrait"; align-items: end; }
+  .hero .intro, .hero .sum { align-self: end; }
+  .hero h1 { font-size: 7.5rem; }
+  .hero .lead { margin-top: 0; font-size: 1.5rem; }
+  .hero .portrait { align-self: center; }
+}
+
+/* Small laptop and tablet (up to 1100): sections fold from three or four columns to two. */
+@media (max-width: 1100px) {
+  .about { grid-template-columns: 1fr 1fr; }
+  .about p { max-width: var(--measure); }
+  .proj { grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr); }
+  .proj .lk { grid-column: 2; justify-self: start; }
+  .pass { grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); }
+  .pass .also { grid-column: 2; grid-template-columns: 1fr 1fr; max-width: none; }
+  .certs { grid-template-columns: 1fr 1fr; }
+  .contact { grid-template-columns: 1fr; }
+  .contact .side, .fields { max-width: 44rem; }
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; grid-template-areas: "portrait" "intro" "sum"; gap: 1.6rem; padding-top: 2.5rem; }
+  .portrait { width: 10.5rem; justify-self: start; border-radius: 10px; }
+  .dhead, .two-col { grid-template-columns: 1fr; }
+  .dhead { align-items: start; }
+  .shots.two { grid-template-columns: 1fr; }
+  .notches { grid-template-columns: 1fr 1fr; }
+  .pass { grid-template-columns: 1fr; }
+  .pass .placeholder { max-width: 26rem; }
+  .pass .also { grid-column: auto; }
+  .timeline { --col: 7rem; }
+}
+@media (max-width: 640px) {
+  /* Phone: the bar stops being sticky, so the two-row nav does not eat a quarter of the screen. */
+  .bar { position: static; }
+  .bar .in { gap: 8px 16px; padding-top: 10px; padding-bottom: 12px; }
+  .bar nav { order: 3; width: 100%; margin-left: 0; flex-wrap: wrap; gap: .35rem 1.1rem; font-size: .875rem; }
+  .bar .lang { margin-left: auto; }
+  .hero { padding-top: 2rem; }
+  .about { grid-template-columns: 1fr; }
+  .proj { grid-template-columns: 1fr; gap: .9rem; }
+  .proj .thumb { max-width: 26rem; }
+  .proj .lk { grid-column: auto; }
+  /* Phone: the spine moves to the left edge and the date sits above the title. */
+  .timeline { --col: 0rem; }
+  .timeline::before, .timeline::after { left: 1rem; }
+  .ev { grid-template-columns: 2rem minmax(0, 1fr); column-gap: .75rem; }
+  .ev .when { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0 .6rem; align-items: baseline; padding-top: 0; }
+  .ev .when small { display: inline; margin: 0; }
+  .ev .node { grid-column: 1; grid-row: 1; margin-top: .3rem; }
+  .ev.now .node { margin-top: .2rem; }
+  .ev .what { grid-column: 2; margin-top: .3rem; }
+  .certs, .pass .also, .shots.three, .notches, .fields { grid-template-columns: 1fr; }
+  .shots.three { max-width: 16rem; }
+  .fields label:nth-of-type(3), .fields button, .fields .note { grid-column: auto; }
+  footer { flex-direction: column; gap: 4px; }
+  .dlg[open] { place-items: end center; }
+  .panel { width: 100%; max-height: 88vh; border-radius: 16px 16px 0 0; border-bottom: 0; padding: 1.5rem 1.25rem 2.25rem; }
+  @keyframes dlg-in { from { opacity: 0; transform: translateY(40px); } }
+  @keyframes dlg-out { to { opacity: 0; transform: translateY(30px); } }
+}
+/* Small phones: name, language switch and CV still fit on one row. */
+@media (max-width: 420px) {
+  .bar .in { column-gap: 10px; }
+  .bar .lang button { min-width: 1.75rem; padding: 0 .2rem; }
+  .bar .btn.primary { padding-inline: .8rem; }
+}

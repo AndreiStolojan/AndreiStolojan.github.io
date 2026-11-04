@@ -1,0 +1,15 @@
+{
+  "name": "andreistolojan-site-dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "bun serve.ts",
+    "check": "bun check-site.ts",
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "puppeteer-core": "^25.16.0",
+    "typescript": "6"
+  }
+}

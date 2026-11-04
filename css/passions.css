@@ -1,0 +1,138 @@
+/* Passions, Find the gap. Passions you play for a moment. A band edge to edge, black under the club's violet light, holds
+   a half court from above with the visitor as the pivot (violet, the captain's C, "Me"). Three rounds of an
+   illustrative play: a back has the ball, the defender nearest him steps out to meet him, and the gap opens behind
+   that defender. The visitor slides along the pivot's line (the violet dotted line just outside 6 m) until the
+   pass lane is clear: the lane turns from a grey dashed line into a solid white one and a ring closes round him.
+   Let go (or press Enter) and the pass comes; he turns; the keeper takes the near post; two targets appear on the
+   goal's corners. The far corner scores, the near one is saved. Three goals and the play is done. The game logic
+   is passions-passions.js, the geometry the inline game data.
+   Under the band: his facts, and a chess puzzle: the same illustrative position as pa1, mate in one, found by the
+   visitor (pick up the rook, put it down).
+   Hover and keyboard focus show the same ring. Nothing moves unless the visitor does something. Reduced motion:
+   every move lands at once. */
+
+.passions-band { margin: 0 calc(-1 * var(--pad)); padding: clamp(1.5rem, 3vw, 3rem) var(--pad); background: radial-gradient(70% 120% at 50% 0%, #1f1038, #000 72%); border-block: 1px solid #2d1b50; }
+.passions-game { --pw: clamp(30rem, 54vw, 66rem); display: grid; grid-template-columns: minmax(0, 1fr) min(var(--pw), 100%) minmax(0, 1fr); gap: 1.5rem clamp(1.5rem, 2.5vw, 3rem); align-items: center; }
+
+/* ---------- the heads-up text either side of the court ---------- */
+.passions-hud-l h3 { font-size: clamp(1.5rem, 1rem + 1.2vw, 2.4rem); line-height: 1.05; letter-spacing: -.025em; }
+.passions-say { margin-top: .7rem; font-size: 1.05rem; line-height: 1.45; color: #fff; min-height: 4.4em; }
+.passions-how { margin-top: .8rem; font-size: .875rem; color: var(--muted); }
+.passions-tp { display: none; }
+@media (hover: none) { .passions-hv { display: none; } .passions-tp { display: inline; } }
+.passions-hud-r { display: grid; gap: .9rem; justify-items: start; }
+.passions-score { display: grid; gap: .45rem; color: var(--text); }
+.passions-score b { font-size: 1.6rem; font-weight: 600; color: #fff; margin-right: .2rem; }
+.passions-pips { display: flex; gap: .4rem; }
+.passions-pips svg { width: 1.6rem; height: 1.6rem; fill: none; stroke: #8b95a7; stroke-width: 1.2; transition: fill .3s, stroke .3s; }
+.passions-pips svg.passions-got { fill: #fff; stroke: #000; }
+.passions-pips svg.passions-got circle { stroke: #fff; }
+.passions-note { font-size: .875rem; color: var(--muted); }
+.passions-restart, .passions-again { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .8rem; border: 1px solid #313a4a; border-radius: 8px; background: #000; font-size: .875rem; font-weight: 500; color: #fff; transition: border-color .2s, background .2s; }
+.passions-restart svg, .passions-again svg { width: .95rem; height: .95rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .45s var(--ease); }
+.passions-restart:hover, .passions-restart:focus-visible { outline: 0; border-color: #c3a6ff; }
+.passions-restart:hover svg, .passions-restart:focus-visible svg, .passions-again:hover svg, .passions-again:focus-visible svg { transform: rotate(-200deg); }
+.passions-game[data-phase="done"] .passions-restart { border-color: #fff; }
+
+/* ---------- the court ---------- */
+.passions-pitch { --h: max(2.75rem, 6cqi); position: relative; aspect-ratio: 920 / 575; container-type: inline-size; border-radius: 14px; background: #000; box-shadow: inset 0 0 0 1px #1b1f27; overflow: hidden; touch-action: pan-y; }
+.passions-game[data-phase="move"] .passions-pitch { cursor: pointer; }
+.passions-svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.passions-ln { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.passions-nine { stroke-dasharray: 7 7; }
+.passions-netg { transform-box: fill-box; transform-origin: 50% 100%; }
+.passions-net { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; fill: transparent; transition: fill .5s; }
+.passions-game.passions-scored .passions-net { fill: rgba(255, 255, 255, .3); }
+/* His line: dotted in the club's violet, so it reads as a path to move along, not a court marking. */
+.passions-track { stroke: #8b6fd6; stroke-width: 2.4; stroke-dasharray: .1 8; vector-effect: non-scaling-stroke; }
+.passions-gk { fill: #000; stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.passions-at { fill: #fff; }
+.passions-df { fill: #000; stroke: #8b95a7; stroke-width: 1.5; vector-effect: non-scaling-stroke; transition: stroke .2s, fill .2s; }
+.passions-df.passions-block { stroke: #fff; fill: #2a303b; }
+.passions-lane { stroke: #8b95a7; stroke-width: 1.4; stroke-dasharray: 5 6; vector-effect: non-scaling-stroke; }
+.passions-game.passions-open .passions-lane { stroke: #fff; stroke-width: 2; stroke-dasharray: none; }
+.passions-game:not([data-phase="move"]) .passions-lane { opacity: 0; }
+.passions-ring { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity .2s; }
+.passions-game.passions-open[data-phase="move"] .passions-ring { opacity: 1; }
+.passions-shot { stroke: #fff; stroke-width: 1.8; vector-effect: non-scaling-stroke; }
+.passions-mine circle { fill: #5b2a99; stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.passions-mine path { stroke: #fff; stroke-width: 2.6; }
+.passions-mine .passions-face { fill: #fff; stroke: none; }
+.passions-ball { fill: #fff; stroke: #000; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.passions-paint { position: absolute; width: auto; height: 14%; transform: translate(-50%, -50%); pointer-events: none; }
+.passions-tag { position: absolute; transform: translate(-50%, calc(-100% - var(--h) / 2 - 7px)); padding: 0 .25rem; background: #000; font-size: .875rem; line-height: 1.3; font-weight: 600; color: #fff; pointer-events: none; }
+/* The pivot is a slider: drag it, or focus it and use the arrow keys. A thumb-sized round handle (--h) over the
+   disc; "Me" sits just above the handle's ring at any size. */
+.passions-me { position: absolute; width: var(--h); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; cursor: grab; touch-action: none; transition: box-shadow .2s var(--ease); }
+.passions-me:hover, .passions-me:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px #c3a6ff, 0 0 0 4px rgba(195, 166, 255, .18); }
+.passions-me:active { cursor: grabbing; }
+.passions-game:not([data-phase="move"]) .passions-me { cursor: default; }
+/* The two corners to shoot at, once he has the ball and has turned. */
+.passions-aim { position: absolute; width: max(2.4rem, 6cqi); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid #fff; background: rgba(0, 0, 0, .55); animation: passions-pop .32s cubic-bezier(.3, 1.5, .5, 1) both; transition: background .2s, box-shadow .2s; }
+.passions-aim::after { content: ""; position: absolute; inset: 34%; border-radius: 50%; background: #fff; }
+.passions-aim[data-c="0"] { transform: translate(-80%, -50%); }
+.passions-aim[data-c="1"] { transform: translate(-20%, -50%); }
+.passions-aim:hover, .passions-aim:focus-visible { outline: 0; background: rgba(195, 166, 255, .35); box-shadow: 0 0 0 4px rgba(195, 166, 255, .3); }
+.passions-aim[hidden] { display: none; }
+@keyframes passions-pop { from { opacity: 0; scale: .4; } }
+
+/* ---------- under the band: the facts and the chess puzzle ---------- */
+.passions-below { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.5rem var(--gap); margin-top: clamp(2rem, 3.5vw, 3rem); }
+.passions-hd { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .6rem; }
+.passions-crest { width: auto; height: 2.3rem; }
+.passions-rookmark { width: 2rem; height: 2rem; fill: var(--gold); }
+.passions-rookmark-s { fill: none; }
+.passions-it h3 { font-size: 1.3rem; }
+.passions-kind { font-size: .9rem; color: var(--muted); }
+.passions-p { margin-top: .45rem; max-width: 40em; }
+.passions-hon { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.5rem; margin-top: .9rem; }
+.passions-hon li { display: flex; align-items: center; gap: .55rem; padding: .45rem 0; border-top: 1px solid #1e2430; color: var(--text); }
+.passions-hon b { color: #fff; font-weight: 600; }
+.passions-hon-i { flex: none; width: 1.6rem; height: 1.6rem; fill: currentColor; }
+.passions-hon-i-gold { color: var(--gold); } .passions-hon-i-silver { color: var(--silver); } .passions-hon-i-bronze { color: var(--bronze); }
+.passions-hon-i-s { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+.passions-more { margin-top: 1.1rem; }
+
+.passions-chess { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.25rem clamp(1.25rem, 2vw, 2rem); align-items: start; }
+.passions-bd { position: relative; width: clamp(13rem, 17vw, 19rem); aspect-ratio: 1; }
+.passions-board { display: block; width: 100%; height: 100%; outline: 1px solid #313a4a; overflow: visible; }
+.passions-dk { fill: #0e1014; }
+.passions-lt { fill: #2a303b; }
+.passions-w { fill: #fff; }
+.passions-b { fill: #000; stroke: #fff; stroke-width: 1.4; stroke-linejoin: round; }
+.passions-rook { transition: transform .48s cubic-bezier(.55, 0, .2, 1); }
+.passions-to { fill: #f2c14e; opacity: 0; transition: opacity .3s .4s; }
+.passions-mate { fill: none; stroke: #f2c14e; stroke-width: .07; opacity: 0; transition: opacity .3s 1s; }
+.passions-bk { transform-box: fill-box; transform-origin: 50% 62%; transition: transform .6s cubic-bezier(.5, 0, .5, 1.35) .55s; }
+.passions-chess.passions-solved .passions-bk { transform: rotate(90deg); }
+.passions-chess.passions-solved .passions-to { opacity: .42; }
+.passions-chess.passions-solved .passions-mate { opacity: 1; }
+.passions-rk, .passions-dest { position: absolute; width: 12.5%; height: 12.5%; border-radius: 3px; transition: box-shadow .2s var(--ease), left .48s cubic-bezier(.55, 0, .2, 1), top .48s cubic-bezier(.55, 0, .2, 1); }
+.passions-rk:hover, .passions-rk:focus-visible, .passions-rk[aria-expanded="true"] { outline: 0; box-shadow: inset 0 0 0 2px #f2c14e; }
+.passions-dest::after { content: ""; position: absolute; inset: 37%; border-radius: 50%; background: #f2c14e; opacity: .85; transition: inset .15s; }
+.passions-dest:hover, .passions-dest:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px #f2c14e; }
+.passions-dest:hover::after, .passions-dest:focus-visible::after { inset: 32%; }
+.passions-dest[hidden] { display: none; }
+.passions-csay { margin-top: .6rem; color: #fff; min-height: 3em; }
+.passions-clk { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.1rem; }
+.passions-again:hover, .passions-again:focus-visible { outline: 0; border-color: #f2c14e; }
+.passions-again[hidden] { display: none; }
+
+/* Below a laptop: the text goes above the court and the score below it. */
+@media (max-width: 1100px) {
+  .passions-game { grid-template-columns: minmax(0, 1fr); }
+  .passions-hud-l { max-width: 44rem; }
+  .passions-say { min-height: 3em; }
+  .passions-hud-r { grid-template-columns: auto auto; justify-content: space-between; align-items: center; }
+  .passions-hud-r .passions-note { grid-column: 1 / -1; grid-row: 2; }
+  .passions-hud-r .passions-restart { grid-column: 2; grid-row: 1; }
+  .passions-hon { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) { .passions-below { grid-template-columns: 1fr; } .passions-hon { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .passions-hon { grid-template-columns: 1fr; }
+  .passions-chess { grid-template-columns: 1fr; }
+  .passions-bd { width: min(100%, 17rem); }
+  .passions-pitch { border-radius: 10px; aspect-ratio: 600 / 432; }
+  .passions-paint { display: none; }
+}

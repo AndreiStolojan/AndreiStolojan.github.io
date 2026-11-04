@@ -1,0 +1,88 @@
+/* Certifications, Tape labels. ce3's tape library with only the row of tapes: each certificate is a tape cartridge with a
+   paper volume label (a band in the issuers' colours, the title, a barcode and its serial), and no catalog card
+   under it. Click, tap or Enter on a slot and its tape leaves for the drive underneath, which restores the
+   document from the top down, once, and lists its facts (certs-certs.js). The first tape is in the drive from the
+   start; its restore plays the first time the drive comes into view. A tape without a document is blank: the drive
+   says so and shows a dashed placeholder, still a link to the popup.
+   The magazine is a black well that tapes fill from the left; its free width reads as free slots. Phone: two tapes
+   across, the barcode under the serial. Status lights are static: green for restored, amber for blank. */
+
+/* Its own full-width surface, like Projects: the path ends at its top edge, Passions starts on black under it. */
+.certs-sec { margin: clamp(3.5rem, 6vw, 6rem) calc(-1 * var(--pad)) 0; padding: clamp(2.75rem, 5vw, 5rem) var(--pad) clamp(3.5rem, 6vw, 6rem); background: #0b0c10; border-block: 1px solid #1e2430; }
+.certs-lib { display: grid; gap: 1rem; }
+
+.certs-mag { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: .75rem; padding: .75rem; border-radius: 12px; background: #000; box-shadow: inset 0 0 0 1px #1b1f27; }
+.certs-mag li, .certs-tape { display: grid; }
+.certs-tape { --mv: cubic-bezier(.3, .7, .2, 1); text-align: left; border-radius: 8px; }
+.certs-shell { height: 100%; }
+.certs-hold { position: relative; display: grid; }
+.certs-shell { display: block; padding: .55rem .55rem .7rem; border-radius: 7px 7px 5px 5px; background: linear-gradient(#262a32, #16191e); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 0 0 1px #2a2f38; transition: transform .4s var(--mv), opacity .3s, visibility 0s; }
+.certs-label { display: grid; gap: .3rem; padding: 0 .65rem .5rem; border-radius: 3px; background: #f3f1ea; color: #0b0c10; overflow: hidden; }
+.certs-band { height: 7px; margin: 0 -.65rem .15rem; }
+.certs-label b { color: #0b0c10; font-weight: 600; font-size: .95rem; line-height: 1.25; }
+.certs-ser { display: flex; align-items: center; gap: .55rem; font-size: .875rem; font-weight: 500; color: #333a46; letter-spacing: .04em; }
+.certs-bars { flex: 1 1 auto; min-width: 2.5rem; max-width: 7rem; height: 1rem; fill: #0b0c10; }
+.certs-tape:hover .certs-shell, .certs-tape:focus-visible .certs-shell { transform: translateY(-3px); }
+.certs-tape:active .certs-shell { transform: translateY(2px); transition-duration: .08s; }
+/* In the drive: the slot keeps its outline and says where the tape went. */
+.certs-in { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 7px; border: 1.5px dashed #3a4354; color: var(--text); font-size: .875rem; font-weight: 500; opacity: 0; visibility: hidden; transition: opacity .3s .1s, visibility 0s .4s; }
+.certs-tape[aria-pressed="true"] .certs-shell { opacity: 0; visibility: hidden; transform: translateY(18px); transition: transform .4s var(--mv), opacity .3s, visibility 0s .4s; }
+.certs-tape[aria-pressed="true"] .certs-in { opacity: 1; visibility: visible; transition: opacity .3s .1s, visibility 0s; }
+.certs-tape[aria-pressed="true"] { cursor: default; }
+
+/* The drive: a black face with a loading slot and a status light, then the restored volume. */
+.certs-drive { padding: clamp(1rem, 2.4vw, 2.25rem); border-radius: 14px; background: #000; box-shadow: inset 0 0 0 1px #1b1f27; }
+.certs-face { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: clamp(1rem, 2vw, 1.75rem); }
+.certs-slot { width: min(22rem, 50%); height: 9px; border-radius: 3px; background: #0d0f13; box-shadow: inset 0 2px 3px #000, 0 0 0 1px #262b34; }
+.certs-led, .certs-st i { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 8px rgba(61, 220, 132, .6); }
+.certs-drive.certs-blankd .certs-led, .certs-empty i { background: #f5a524; box-shadow: 0 0 8px rgba(245, 165, 36, .55); }
+
+.certs-vol { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 1.5rem var(--gap); align-items: center; }
+.certs-vol[hidden] { display: none; }
+.certs-bay { display: grid; justify-items: center; }
+.certs-doc { position: relative; display: block; width: 100%; max-width: 44rem; border-radius: 4px; overflow: hidden; }
+.certs-doc img { width: 100%; filter: brightness(.92); transition: filter .3s; }
+.certs-doc:hover img { filter: none; }
+/* Restore: the document fills in from the top, with a thin read line at the edge, once per load. */
+.certs-play .certs-doc img { animation: certs-restore 1.1s cubic-bezier(.4, 0, .2, 1) both; }
+.certs-play .certs-doc:not(.certs-blank)::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: #fff; box-shadow: 0 0 12px 2px rgba(255, 255, 255, .5); animation: certs-line 1.1s cubic-bezier(.4, 0, .2, 1) both; }
+.certs-wait .certs-bay { visibility: hidden; }
+@keyframes certs-restore { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes certs-line { from { top: 0; opacity: 1; } 92% { opacity: 1; } to { top: 100%; opacity: 0; } }
+.certs-blank { aspect-ratio: 1.414; display: grid; place-content: center; gap: .3rem; text-align: center; padding: 1rem; border: 1.5px dashed #3a4354; color: var(--muted); font-size: .9rem; }
+.certs-blank b { color: var(--text); font-weight: 500; font-size: 1.05rem; }
+.certs-blank:hover { border-color: #5b6578; }
+
+.certs-st { display: flex; align-items: center; gap: .55rem; font-size: .9rem; font-weight: 500; color: var(--text); }
+.certs-st i { flex: none; }
+.certs-info h3 { margin-top: .6rem; font-size: clamp(1.4rem, 1.1rem + .8vw, 2rem); line-height: 1.15; letter-spacing: -.02em; }
+.certs-meta { display: flex; flex-wrap: wrap; gap: 0 .7rem; margin-top: .35rem; color: var(--text); }
+.certs-meta time { color: var(--fg); font-weight: 500; }
+.certs-by { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
+.certs-m { display: inline-flex; align-items: center; height: 2.2rem; padding: 0 .65rem; border-radius: 5px; background: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 55%, transparent); }
+.certs-m img { width: auto; height: 1.1rem; }
+.certs-m-savnet img { height: 1.3rem; }
+.certs-m-uptcv img { height: 1.7rem; }
+.certs-m-t8x img { height: 1.25rem; }
+.certs-m-txt { font-size: .9rem; font-weight: 500; color: var(--fg); white-space: nowrap; }
+.certs-badge { display: flex; align-items: center; gap: .9rem; margin-top: 1.1rem; }
+.certs-badge img { width: 4.5rem; border-radius: 8px; outline: 0; }
+.certs-badge figcaption { margin: 0; font-size: .9rem; color: var(--text); max-width: 16em; }
+.certs-proof { list-style: none; display: grid; gap: .3rem; margin-top: 1rem; }
+.certs-proof li { display: flex; gap: .6rem; align-items: baseline; color: var(--text); }
+.certs-proof li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 1px; background: var(--edge); transform: translateY(-2px); }
+.certs-info .btn { margin-top: 1.4rem; }
+
+/* Wide screens: the document keeps a reading size and the facts sit right beside it, not across a gap. */
+@media (min-width: 1700px) { .certs-vol { grid-template-columns: minmax(0, 48rem) minmax(0, 1fr); } }
+@media (max-width: 900px) { .certs-vol { grid-template-columns: 1fr; } .certs-doc { max-width: 36rem; } }
+@media (max-width: 640px) {
+  .certs-mag { grid-template-columns: 1fr 1fr; gap: .5rem; padding: .5rem; }
+  .certs-shell { padding: .4rem .4rem .55rem; }
+  .certs-label { padding: 0 .5rem .45rem; }
+  .certs-band { margin: 0 -.5rem .1rem; }
+  .certs-label b { font-size: .875rem; }
+  .certs-ser { flex-wrap: wrap; gap: .25rem; }
+  .certs-bars { flex: 0 0 100%; width: 100%; min-width: 0; max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) { .certs-wait .certs-bay { visibility: visible; } }
