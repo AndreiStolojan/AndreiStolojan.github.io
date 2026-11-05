@@ -1,0 +1,54 @@
+/* A: even contours. A black canvas with fine blue lines at equal strength. */
+/* Load this file last on home, all project pages, and 404.
+   Keep contours-flow.svg?v=787134b85c beside it. Both layers scroll with the document. */
+body {
+  isolation: isolate;
+  background: #000;
+}
+
+/* Explicit project selectors supersede project-pages.css display:none. */
+body::before,
+body::after,
+body.project-detail::before,
+body.project-detail::after {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  animation: none;
+  transition: none;
+  -webkit-mask: none;
+  mask: none;
+}
+body::before { z-index: -2; }
+body::after { z-index: -1; }
+
+/* The document owns the backdrop, so the hero cannot restart it. */
+body.home .badge-hero::before,
+body.home .badge-hero::after { display: none; }
+
+/* Keep existing geometry. Transparent borders remove rules without moving content. */
+body.home :is(.badge-hero, .prj-sec, .certs-sec, .passions-band) {
+  border-block-color: transparent;
+}
+body.home :is(.prj-sec, .certs-sec, .passions-band) { background: transparent; }
+body.home .page > section > h2,
+body.home .jr-stage > h2,
+body.home .projects,
+body.home .jv-it,
+body.home .abt-fx > div,
+body.home .passions-hon li,
+body.project-detail .kv,
+body .page > footer { border-color: transparent; }
+
+/* Year labels, their spacing, and timeline rails retain their grouping role.
+   Game stages, physical objects, forms, dialogs, and the badge keep their edges. */
+
+body::before { background: #000; }
+body::after {
+  background: url("./contours-flow.svg?v=787134b85c") center top / max(100%, 100rem) auto repeat-y;
+  opacity: .95;
+}

@@ -1,0 +1,27 @@
+/* Load after existing page styles and css/navigation.css. */
+body .nav-menu .nav-panel { display: contents; }
+body .nav-menu .nav-toggle { display: none; }
+/* The existing tablet row has room for all links, without a scroll strip. */
+@media (min-width: 641px) and (max-width: 1100px) {
+  body .nav-menu nav { overflow: visible; }
+}
+@media (max-width: 640px) {
+  body .nav-menu { position: static; }
+  body .nav-menu .in { display: grid; grid-template-columns: minmax(0,1fr) 44px auto; grid-template-rows: 60px auto; gap: 0 12px; min-height: 60px; padding-block: 0; }
+  body .nav-menu .name { grid-column: 1; grid-row: 1; min-width: 0; font-size: .875rem; }
+  body .nav-menu .btn.primary { grid-column: 2; grid-row: 1; width: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  /* Without JavaScript the links stay visible and the inactive toggle stays hidden. */
+  body .nav-menu[data-nav-ready] .nav-toggle { display: inline-flex; }
+  body .nav-menu .nav-toggle { grid-column: 3; grid-row: 1; align-items: center; justify-content: center; gap: 8px; min-width: 76px; min-height: 44px; padding: 0 8px; font: inherit; font-size: .875rem; color: #fff; background: transparent; border: 0; border-radius: 0; cursor: pointer; }
+  body .nav-menu .nav-toggle-mark { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+  body .nav-menu .nav-icon-close { display: none; }
+  body .nav-menu .nav-toggle[aria-expanded="true"] .nav-icon-menu { display: none; }
+  body .nav-menu .nav-toggle[aria-expanded="true"] .nav-icon-close { display: block; }
+  body .nav-menu .nav-panel { display: grid; grid-column: 1 / -1; grid-row: 2; padding: 0 0 8px; gap: 4px; }
+  body .nav-menu[data-nav-ready] .nav-panel:not([data-open]) { display: none; }
+  body .nav-menu nav { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); grid-column: auto; grid-row: auto; width: 100%; margin: 0; gap: 0 12px; overflow: visible; font-size: .875rem; }
+  body .nav-menu nav a { min-width: 44px; min-height: 44px; padding: 0; white-space: normal; overflow-wrap: anywhere; }
+  body .nav-menu .lang { grid-column: auto; grid-row: auto; justify-self: start; margin: 0; }
+  body .nav-menu .lang button { min-width: 44px; min-height: 44px; padding: 0; }
+  body .nav-menu :focus-visible { outline: 2px solid var(--cyan,#22d3ee); outline-offset: -2px; }
+}

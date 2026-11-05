@@ -6,8 +6,8 @@
 // Desktop (same media query as the CSS): sets --tx, --ph, --phx on .jr-hz and --p on .jr, lights each mark
 // ([data-x]) once the playhead reaches it, keeps long labels in view, fades out any label the viewport edge would
 // cut, and pans to any entry that receives keyboard focus. The track's start and end line up with the page margin.
-// Phone form: fills the degree rail down to a reading line and plays the grade when the line reaches it.
-// Reduced motion: does nothing; CSS draws every final state.
+// Phone form: fills each existing rail down to a reading line, lights events and plays the grade when reached.
+// Reduced motion: shows every final state, including when the preference changes while the page is open.
 (() => {
   const root = document.querySelector('.jr');
   if (!root) return;
@@ -16,11 +16,14 @@
   const hz = root.querySelector('.jr-hz');
   const now = hz.querySelector('.jr-now');
   const [nowYear, nowMonth] = now.children;
-  const rails = [...root.querySelectorAll('.jv-rail.upt')];
+  const rails = [...root.querySelectorAll('.jv-rail')];
+  const phoneEvents = [...root.querySelectorAll('.jv-it, .jv-arm')].map(el => ({
+    el, marker: el.querySelector('.jv-mk') || el
+  }));
+  const grades = [...root.querySelectorAll('.grade')];
   const phoneGrades = [...root.querySelectorAll('.jv .grade')];
   const desk = matchMedia('(min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  if (!reduce.matches) root.classList.add('anim');
 
   // Track units per decimal year; the same knots as path-gen.js. Inverted here to print the playhead's date.
   const KNOTS = [[2013, 0], [2018, 1.25], [2020, 2.75], [2024, 6.75], [2025, 8.25], [2026, 10.75], [2027, 19.25]];
@@ -45,6 +48,7 @@
     const target = parseFloat(v.dataset.v ??= v.textContent);
     const t0 = performance.now();
     const step = t => {
+      if (reduce.matches) { v.textContent = target.toFixed(1); return; }
       const k = Math.min(1, (t - t0) / 1400);
       v.textContent = (target * (1 - (1 - k) ** 3)).toFixed(1);
       if (k < 1) requestAnimationFrame(step);
@@ -57,6 +61,7 @@
   let m = null;
 
   function measure() {
+    root.classList.toggle('anim', !reduce.matches);
     root.classList.remove('flat');
     root.classList.toggle('pin', desk.matches);
     // Pin only if the whole stage fits under the top bar; otherwise fall back to the year groups.
@@ -142,16 +147,33 @@
     }
   }
 
-  // Phone form: the degree rail fills to a reading line two thirds down the viewport, and the grade
-  // plays once when that line reaches it.
+  // Each rail keeps its own row-span geometry. One reading line advances all overlapping periods,
+  // so SCM and high school begin before university and reverse scrolling restores their earlier state.
   function updatePhone() {
-    if (reduce.matches) return;
     const line = innerHeight * .66;
-    for (const r of rails) {
-      const b = r.getBoundingClientRect();
-      if (b.height) r.style.setProperty('--lit', clamp((line - b.top) / b.height, 0, 1).toFixed(3));
+    const railStates = rails.map(el => ({ el, box: el.getBoundingClientRect() }));
+    const eventStates = phoneEvents.map(({ el, marker }) => ({ el, box: marker.getBoundingClientRect() }));
+    const gradeStates = phoneGrades.map(el => ({ el, box: el.getBoundingClientRect() }));
+    for (const { el, box } of railStates) {
+      if (reduce.matches || box.height) {
+        const lit = reduce.matches ? 1 : clamp((line - box.top) / box.height, 0, 1);
+        el.style.setProperty('--lit', lit.toFixed(3));
+      }
     }
-    for (const g of phoneGrades) { const b = g.getBoundingClientRect(); if (b.height && b.top < line) play(g); }
+    for (const { el, box } of eventStates) {
+      el.classList.toggle('on', reduce.matches || (box.height > 0 && box.top <= line));
+    }
+    if (reduce.matches) {
+      // Inline progress from a previous scroll must not override the reduced-motion final state.
+      // Restore both grade copies immediately if the preference changes during their count-up.
+      for (const g of grades) {
+        const v = g.querySelector('.gv');
+        v.textContent = v.dataset.v ?? v.textContent;
+        g.classList.add('played');
+      }
+      return;
+    }
+    for (const { el, box } of gradeStates) { if (box.height && box.top <= line) play(el); }
   }
 
   // Keyboard: an entry that gets focus while off screen is panned in, its start just behind the playhead.
@@ -171,6 +193,7 @@
   addEventListener('scroll', ask, { passive: true });
   addEventListener('resize', () => { cancelAnimationFrame(resizing); resizing = requestAnimationFrame(measure); });
   desk.addEventListener('change', measure);
+  reduce.addEventListener('change', measure);
   document.fonts.ready.then(measure);
   measure();
 })();

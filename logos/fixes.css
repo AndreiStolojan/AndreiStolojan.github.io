@@ -1,0 +1,105 @@
+/* Load after path.css. Entry marks use decoded images, without CSS masks. */
+.jr-sec img.mk.logo-image,
+.jr-sec img.lg.logo-image {
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  background: none;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  -webkit-mask: none;
+  mask: none;
+}
+.jr-sec img.mk.logo-image {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  padding: 0;
+}
+.jr-sec img.mk.thi.logo-image { padding: .18rem; }
+.jr-sec img.mk.wk.logo-image { height: 1.6rem; margin-top: .15rem; }
+.jr-sec img.lg.logo-image { object-position: left center; }
+
+/* The existing THI signet has a wide, transparent viewBox for tiling. Its tight
+   copy keeps exactly the same path and gives entry images the real silhouette. */
+.jr-sec .jr-seg.thi::after {
+  -webkit-mask: none;
+  mask: none;
+  background: none;
+  content: none;
+}
+
+/* Repeat actual source crests. No mask-composite dependency, recolouring, or dots. */
+.jr-sec .jr-seg.scm::after,
+.jr-sec .jr-seg.csu::after,
+.jr-sec .jr-seg.cal::after,
+.jr-sec .jr-seg.upt::after,
+.jr-sec .jv-rail.scm::after,
+.jr-sec .jv-rail.csu::after,
+.jr-sec .jv-rail.cal::after { content: none; }
+
+/* UPT uses the existing white SVG directly, including its whole silhouette. */
+.jr-sec img.mk.upt.logo-image { padding: .25rem; background: var(--upt); border: 1px solid var(--upt-edge); border-radius: 2px; }
+.jr-sec .jr-seg.upt .jr-pat { display: none; }
+.jr.anim .jv-rail.upt::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgb(0 0 0 / .72); clip-path: inset(calc(var(--lit, 0) * 100%) 0 0); }
+
+/* The two runs leave each measured label gap empty. Grid hides spare rows,
+   so the end of a run does not cut a crest in half. */
+.jr-logo-track {
+  position: absolute;
+  top: .25rem;
+  bottom: .25rem;
+  left: calc(var(--h1b, 0px) + .65rem);
+  right: max(.35rem, calc(100% - var(--h2a, 99999px) + .65rem));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 2.25rem);
+  grid-template-rows: 100%;
+  grid-auto-rows: 0;
+  gap: 0 .85rem;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.jr-logo-track.tail { left: calc(var(--h2b, 99999px) + .65rem); right: .35rem; }
+.jr-logo-track img {
+  display: block;
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 100%;
+  object-fit: contain;
+  opacity: .7;
+}
+.jr-seg.thi .jr-logo-track { left: .35rem; right: .35rem; grid-template-columns: repeat(auto-fill, 1.65rem); }
+.jr-seg.thi .jr-logo-track img { width: 1.65rem; }
+
+/* Keep the original content start. Reallocate the existing rail gutter so each
+   repeated crest has enough width to read as a crest. */
+.jr-sec .jv { grid-template-columns: 1.25rem .35rem 1.05rem .4rem minmax(0, 1fr); }
+.jr-sec .jv-rail.scm,
+.jr-sec .jv-rail.csu,
+.jr-sec .jv-rail.cal { border-radius: 2px; }
+.jv-logo-track {
+  position: absolute;
+  inset: .35rem 1px;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: repeat(auto-fill, 1.35rem);
+  grid-auto-rows: 0;
+  gap: .75rem 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.jv-logo-track img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 1.35rem;
+  object-fit: contain;
+}
+
+/* The SCM source is purple. A white silhouette keeps the approved crest legible
+   over the existing purple rails and bars; the entry image keeps its source colour. */
+.jr-seg.scm .jr-logo-track img,
+.jv-rail.scm .jv-logo-track img { filter: brightness(0) invert(1); opacity: .8; }

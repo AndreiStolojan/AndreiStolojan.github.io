@@ -1,21 +1,14 @@
-// Contact patch panel: the patch cable and the steps of the shared contact form (contact-form.js).
-// The cable is two paths in the rack's own pixels: the wire, from the left edge of the screen along under the
-// panel and up behind it, and the plug, drawn in front of the panel. A move unplugs (the plug drops just below
-// the panel), travels under it to the new port, and seats; the new port's link light comes on.
-//   on view  the cable hangs loose under Message and plugs in, once
-//   ports    using any port (click, tap, Enter) moves the plug there; Message also puts the cursor in the form
-//   sending  the plug goes back to Message if it was elsewhere; the link light blinks a few times
-//   sent     the light stays on
-//   error    the link goes down and the cable fails over to Email, where the mailto fallback is
-//   idle     back to Message
-// Under reduced motion the plug is seated from the start and moves without travelling.
+// Seats the cable in one of five measured jacks. Wrapped rows use the same geometry.
+// Finite interaction animations stop after each move; reduced motion draws the final seat immediately.
+// A delivery error leaves Message red and routes the cable to the Email fallback.
 (() => {
   const root = document.querySelector('.contact-sec');
-  if (!root || !window.coForm) return;
+  if (!root || !window.coForm || root.dataset.contactReady) return;
+  root.dataset.contactReady = 'true';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const wait = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
   const rack = root.querySelector('.contact-rack'), panel = root.querySelector('.contact-panel');
   const wire = root.querySelector('.contact-wire'), boot = root.querySelector('.contact-boot');
+  if (!rack || !panel || !wire || !boot) { window.coForm(root); return; }
   const port = k => root.querySelector(`.contact-p[data-port="${k}"]`);
   const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
   const easeOut = t => 1 - (1 - t) ** 3;
@@ -89,6 +82,7 @@
     if (cur.port !== 'message' || cur.lift !== 1) return;
     setTimeout(async () => { seq++; if (await tween(420, t => { cur.lift = 1 - easeOut(t); })) light('message', true); }, 250);
   }, { threshold: .6 }).observe(rack);
+  new ResizeObserver(draw).observe(panel);
   addEventListener('resize', draw);
   document.fonts.ready.then(draw);
 
@@ -98,12 +92,39 @@
   }));
 
   const msg = port('message');
+  const portState = root.querySelector('[data-co="port-state"]');
+  // A failed message remains red after the cable moves to the working Email route.
+  const showPortError = on => {
+    msg.classList.toggle('contact-error', on);
+    if (portState) {
+      portState.hidden = !on;
+      portState.textContent = 'Unavailable';
+    }
+    if (on) msg.setAttribute('aria-describedby', 'contact-delivery-status');
+    else msg.removeAttribute('aria-describedby');
+  };
   const play = async step => {
-    if (step === 'sending') { await move('message'); msg.classList.remove('contact-act'); void msg.offsetWidth; msg.classList.add('contact-act'); }
-    if (step === 'sent') { msg.classList.remove('contact-act'); light('message', true); await wait(250); }
-    if (step === 'error') { msg.classList.remove('contact-act'); await wait(250); await move('email'); await wait(150); }
-    if (step === 'idle') await move('message');
+    if (step === 'sending') {
+      showPortError(false);
+      await move('message');
+      if (root.dataset.state === 'sending') msg.classList.add('contact-act');
+    }
+    if (step === 'sent') {
+      showPortError(false);
+      msg.classList.remove('contact-act');
+      await move('message');
+      light('message', true);
+    }
+    if (step === 'error' || step === 'unavailable') {
+      msg.classList.remove('contact-act');
+      showPortError(true);
+      await move('email');
+    }
+    if (step === 'idle') {
+      showPortError(root.dataset.offline === 'true');
+      await move(root.dataset.offline === 'true' ? 'email' : 'message');
+    }
   };
 
-  coForm(root, play);
+  window.coForm(root, play);
 })();

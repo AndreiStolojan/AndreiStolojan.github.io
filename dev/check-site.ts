@@ -6,7 +6,7 @@
 //   Links     every internal link and #hash resolves, every external link opens a new tab with rel="noopener".
 //   Objects   driven with a real mouse: popups open and close, the path pins and pans, Barb's inbox scan, Eclipse's
 //             notch player, Sotto's pill, the About moon (also a tap on a phone), and the page under reduced motion.
-//   Contact   with the key empty (as committed) the form says it is offline; with a test key and Web3Forms mocked,
+//   Contact   with the key empty, fields stay editable and an email fallback preserves the draft; with Web3Forms mocked,
 //             bad input is stopped in the browser, a good message is posted, and a failed request shows the
 //             email address.
 import puppeteer, { type HTTPRequest, type Page } from 'puppeteer-core';
@@ -245,19 +245,33 @@ for (const path of pages) {
 
 // ---------- Contact ----------
 {
-  // As committed: no key, so the form is offline and shows the address.
+  // Without a key, visitors can write a draft and move it to their email application.
   const { page, errors } = await open('/', 1440);
   const s = await page.evaluate(() => {
-    const status = document.querySelector<HTMLElement>('.contact-status')!;
+    const status = document.querySelector<HTMLElement>('.contact-availability')!;
     const box = status.getBoundingClientRect();
     return {
       text: status.textContent!.trim(), address: document.querySelector('.contact-mail')!.textContent!,
       disabled: document.querySelector<HTMLButtonElement>('.contact-send')!.disabled,
-      fieldsDisabled: [...document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.contact-form [name="name"], .contact-form [name="email"], .contact-form [name="message"]')].every(field => field.disabled),
-      visible: getComputedStyle(status).clipPath === 'none' && box.width > 10 && box.height > 10,
+      editable: [...document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.contact-form [name="name"], .contact-form [name="email"], .contact-form [name="message"]')].every(field => !field.disabled),
+      visible: !status.hidden && getComputedStyle(status).clipPath === 'none' && box.width > 10 && box.height > 10,
+      ports: document.querySelectorAll('.contact-port').length,
+      error: document.querySelector('[data-port="message"]')!.classList.contains('contact-error'),
     };
   });
-  ok(s.disabled && s.fieldsDisabled && s.visible && s.address.includes('andreistolojan@gmail.com') && s.text.includes('offline') && !errors.length, `contact, no key: visible "${s.text}" (button and fields disabled ${s.disabled && s.fieldsDisabled})`);
+  ok(!s.disabled && s.editable && s.visible && s.ports === 5 && s.error && s.address.includes('andreistolojan@gmail.com') && s.text.includes('unavailable') && !errors.length,
+    `contact, no key: editable draft, five ports and visible unavailability (${JSON.stringify(s)})`);
+  await page.type('#contact-name', 'Preview Check');
+  await page.type('#contact-email', 'preview@example.com');
+  await page.type('#contact-message', 'A local draft that must remain available.');
+  await page.click('.contact-send');
+  const draft = await page.evaluate(() => ({
+    failureVisible: !(document.querySelector('.contact-fail') as HTMLElement).hidden,
+    value: (document.querySelector('#contact-message') as HTMLTextAreaElement).value,
+    fallback: (document.querySelector('[data-co="mailto"]') as HTMLAnchorElement).href,
+  }));
+  ok(draft.failureVisible && draft.value === 'A local draft that must remain available.' && decodeURIComponent(draft.fallback).includes(draft.value),
+    'contact, no key: submission reports failure, preserves the draft and updates the email fallback');
   await page.close();
 
   // With a test key, and Web3Forms answered by this script.

@@ -1,0 +1,65 @@
+/* Load after baseline hero.css. This file owns only the hero layout. */
+.home .badge-hero[data-hero-layout="a"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Four rows center the original left text as one block beside the badge. */
+.home .badge-hero[data-hero-layout="a"] > .badge-txt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto auto minmax(0, 1fr);
+  column-gap: var(--gap);
+  min-width: 0;
+}
+.home .badge-hero[data-hero-layout="a"] .badge-t {
+  grid-column: 1;
+  grid-row: 2;
+}
+.home .badge-hero[data-hero-layout="a"] .badge-hang {
+  grid-column: 2;
+  grid-row: 1 / 5;
+}
+.home .badge-hero[data-hero-layout="a"] .badge-summary {
+  grid-column: 1;
+  grid-row: 3;
+  min-width: 0;
+}
+
+/* The single DOM order is title, badge, description and actions. */
+@media (max-width: 1100px) {
+  .home .badge-hero[data-hero-layout="a"] > .badge-txt {
+    display: flex;
+    flex-direction: column;
+  }
+  .home .badge-hero[data-hero-layout="a"] .badge-hang {
+    --strap: 3.75rem;
+    --hero-original-strap: 8.1rem;
+    width: 100%;
+    max-width: 26rem;
+    min-width: 0;
+    align-self: flex-start;
+    margin-top: .75rem;
+  }
+  /* Crop only the fabric. Keep the original SVG and metal clip scale. */
+  .home .badge-hero[data-hero-layout="a"] .badge-clip {
+    top: calc(-1 * var(--hero-original-strap));
+    height: calc(var(--hero-original-strap) + 1.45rem);
+    clip-path: inset(calc(var(--hero-original-strap) - var(--strap)) 0 0);
+  }
+  .home .badge-hero[data-hero-layout="a"] .badge-badge {
+    max-width: 100%;
+  }
+  .home .badge-hero[data-hero-layout="a"] .badge-summary {
+    margin-top: 2rem;
+  }
+  .home .badge-hero[data-hero-layout="a"] .badge-lead {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .home .badge-hero[data-hero-layout="a"] .badge-hang {
+    --hero-original-strap: 6.9rem;
+    align-self: center;
+  }
+}

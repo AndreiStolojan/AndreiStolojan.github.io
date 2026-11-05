@@ -586,4 +586,11 @@
   "Computer engineering graduate, focused on Linux systems and security.": "Diplômé en génie informatique, orienté vers les systèmes Linux et la sécurité.",
   "at": "chez",
   "Systems Engineer": "Systems Engineer",
+  "Email delivery unavailable.": "L'envoi par formulaire est indisponible.",
+  "Message not sent.": "Message non envoyé.",
+  "Message sent.": "Message envoyé.",
+  "Unavailable": "Indisponible",
+  "Please shorten this field.": "Merci de raccourcir ce texte.",
+  "Badge tilt enabled.": "L’inclinaison du badge est activée.",
+  "Badge tilt unavailable.": "L’inclinaison du badge est indisponible.",
 };

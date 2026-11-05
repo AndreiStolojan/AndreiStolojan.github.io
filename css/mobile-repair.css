@@ -1,0 +1,24 @@
+/* Load after css/path.css. Existing rail colours, row spans and logo masks stay intact.
+   The unread part is dimmed by a plain overlay, moved only by the scroll-linked --lit value. */
+.jr.anim .jv-rail:not(.upt)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgb(0 0 0 / .72);
+  clip-path: inset(calc(var(--lit, 0) * 100%) 0 0);
+}
+
+/* Keep event text readable. Only its marker waits for the same reading line as the rails. */
+.jr.anim .jv-it:not(.on) .jv-mk,
+.jr.anim .jv-arm:not(.on) { opacity: .32; }
+
+/* Let the phone board fill its existing content column. The SVG and square
+   buttons share this wrapper, so both keep the same scale and coordinates. */
+@media (max-width: 640px) {
+  .passions-chess .passions-bd {
+    width: 100%;
+    margin-inline: auto;
+  }
+}

@@ -1,138 +1,77 @@
-/* Contact, Patch. The ways to reach Andrei are the ports of a 1U patch panel drawn in white line: Message, Email,
-   LinkedIn, GitHub and CV, then empty ports to the end of the panel. A white patch cable runs in from the edge of
-   the screen, under the panel, up into the port in use, and that port's link light is on (contact-contact.js).
-   Using any port moves the plug there: it comes out, travels, and seats. The page opens with the cable hanging
-   loose; it plugs into Message once, when the panel comes into view.
-   Sending blinks the Message port's activity light a few times. If the send fails, the link goes down and the
-   cable fails over to Email, where the mailto fallback is. One accent in the object: the green link light.
-   Reduced motion: the cable is plugged from the start and moves without travelling; the light does not blink. */
-
+/* Five real contact ports. Geometry is measured from each jack, including wrapped rows. */
 .contact-sec [hidden] { display: none !important; }
 .contact-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem var(--gap); align-items: end; }
-.contact-say { font-size: clamp(1.35rem, 1rem + 1.2vw, 2.4rem); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; color: var(--fg); max-width: 24em; }
-.contact-mail { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; color: var(--fg); }
-.contact-mail a { font-size: 1.05rem; font-weight: 500; text-decoration: underline 1px transparent; text-underline-offset: 5px; transition: color .2s var(--ease), text-decoration-color .2s var(--ease); }
-.contact-mail a:focus-visible { color: var(--cyan); text-decoration-color: var(--cyan); }
-.contact-copy { display: inline-flex; align-items: center; gap: .45rem; font-size: .9rem; font-weight: 500; color: var(--text); padding: .35rem .7rem; border-radius: 6px; border: 1px solid var(--edge); transition: color .2s var(--ease), border-color .2s var(--ease), transform .12s var(--ease); }
-.contact-copy:focus-visible { color: var(--cyan); border-color: var(--cyan); }
-.contact-copy:active { transform: translateY(1px); }
-.contact-copy svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.contact-copy .cp-b { display: none; }
-.contact-copy[data-done] { color: var(--cyan); border-color: var(--cyan); }
-.contact-copy[data-done] .cp-a { display: none; }
-.contact-copy[data-done] .cp-b { display: inline; animation: contact-tick .3s var(--ease); }
-@keyframes contact-tick { from { opacity: 0; transform: scale(.6); } }
-
-/* The rack: the panel, and room under it for the cable's run to the edge of the screen. */
-.contact-rack { position: relative; margin-top: clamp(1.75rem, 3.5vw, 3rem); padding-bottom: 5rem; }
-.contact-panel { position: relative; z-index: 1; padding: .8rem clamp(2.25rem, 3.5vw, 3.5rem) 1.1rem; border: 1.5px solid #fff; border-radius: 6px; background: #000; }
-/* The panel's ears, with their screw holes. */
-.contact-panel::before, .contact-panel::after { content: ""; position: absolute; top: 50%; width: .8rem; height: .8rem; margin-top: -.4rem; border: 1.5px solid #8b95a7; border-radius: 50%; }
-.contact-panel::before { left: clamp(.7rem, 1.2vw, 1.2rem); }
-.contact-panel::after { right: clamp(.7rem, 1.2vw, 1.2rem); }
-.contact-panel ul { --b: 11; list-style: none; display: grid; grid-template-columns: repeat(5, 5.75rem) repeat(var(--b), minmax(0, 1fr)); gap: .35rem; }
-.contact-port:nth-child(n+17) { display: none; }
+.contact-say { max-width: 28em; color: #fff; font-size: clamp(1.3rem, 1rem + 1vw, 2rem); line-height: 1.2; font-weight: 600; letter-spacing: -.02em; }
+.contact-mail { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
+.contact-mail a { font-size: 1rem; overflow-wrap: anywhere; }
+.contact-copy { display: inline-flex; gap: .4rem; align-items: center; min-height: 44px; font-size: .875rem; color: var(--muted); }
+.contact-copy svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.contact-copy .cp-b, .contact-copy[data-done] .cp-a { display: none; }
+.contact-copy[data-done] .cp-b { display: inline; }
+.contact-rack { position: relative; margin-top: 1.75rem; padding-bottom: 3.5rem; }
+.contact-panel { position: relative; z-index: 1; padding: .65rem 1rem; border: 1px solid #fff; border-radius: 3px; background: #000; }
+.contact-panel ul { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; list-style: none; padding: 0; margin: 0; }
 .contact-port { display: grid; min-width: 0; }
-.contact-p, .contact-blank { display: grid; justify-items: center; align-content: start; gap: .5rem; padding: .3rem .1rem .35rem; border-radius: 6px; }
-.contact-p { color: var(--text); transition: color .2s var(--ease), background .2s var(--ease); }
-.contact-lbl { display: flex; align-items: center; gap: .4rem; min-height: 1.35rem; font-size: .875rem; font-weight: 500; white-space: nowrap; }
-.contact-name.ext::after { margin-left: .3em; }
-.contact-p:focus-visible { color: var(--fg); background: #10131a; outline-offset: 2px; }
-
-/* The link light: off, on (a cable is in), blinking a few times while a message goes out. */
-.contact-led { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #1b2029; box-shadow: inset 0 0 0 1px #3a4250; transition: background .25s var(--ease), box-shadow .25s var(--ease); }
-.contact-on .contact-led { background: #4ade80; box-shadow: 0 0 0 1px #4ade80, 0 0 10px rgba(74, 222, 128, .55); }
-.contact-act .contact-led { animation: contact-blink .16s steps(1, end) 12; }
+.contact-p { display: grid; justify-items: center; align-content: start; gap: .45rem; min-height: 76px; padding: .35rem .1rem; color: #fff; }
+.contact-lbl { display: flex; gap: .35rem; align-items: center; white-space: nowrap; font-size: .875rem; font-weight: 500; min-height: 1.35rem; }
+.contact-name.ext::after { margin-left: .2em; }
+.contact-p:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.contact-led { width: 7px; height: 7px; flex: none; border-radius: 50%; background: #1b2029; box-shadow: inset 0 0 0 1px #657083; }
+.contact-on .contact-led { background: #4ade80; box-shadow: 0 0 0 1px #4ade80; }
+.contact-error .contact-led { background: #fb7185; box-shadow: 0 0 0 1px #fb7185; }
+.contact-error .contact-name, .contact-port-state { color: #fb7185; }
+.contact-port-state { font-size: .875rem; line-height: 1.2; }
+.contact-act .contact-led { animation: contact-blink .25s steps(1, end) 8; }
 @keyframes contact-blink { 50% { background: #14532d; box-shadow: 0 0 0 1px #2f7a4d; } }
-
-/* An RJ45 jack seen from the front: the opening, eight contacts at the top, the latch slot at the bottom. */
-.contact-jack { position: relative; width: 2.6rem; aspect-ratio: 6 / 5; border: 1.5px solid #fff; border-radius: 2px; background: #000; transition: border-color .2s var(--ease); }
+.contact-jack { position: relative; width: 2.4rem; aspect-ratio: 6 / 5; border: 1.5px solid #fff; border-radius: 2px; background: #000; }
 .contact-jack::before { content: ""; position: absolute; top: 14%; left: 18%; right: 18%; height: 22%; background: repeating-linear-gradient(90deg, #8b95a7 0 1px, transparent 1px calc(100% / 8)); }
-.contact-jack::after { content: ""; position: absolute; left: 32%; right: 32%; bottom: -1.5px; height: 22%; border: 1.5px solid inherit; border-color: inherit; border-bottom: 0; background: #000; border-radius: 1px 1px 0 0; }
-.contact-blank .contact-jack { width: min(2.6rem, 100%); border-color: #5b6474; }
-.contact-blank .contact-jack::before { background: repeating-linear-gradient(90deg, #3a4250 0 1px, transparent 1px calc(100% / 8)); }
-
-/* The cable, drawn by contact-contact.js in the rack's own pixels. It starts at the left edge of the screen and runs
-   behind the panel; only the plug sits in front of it. */
+.contact-jack::after { content: ""; position: absolute; left: 32%; right: 32%; bottom: -1.5px; height: 22%; border: 1.5px solid; border-color: inherit; border-bottom: 0; background: #000; }
+.contact-error .contact-jack { border-color: #fb7185; }
 .contact-cable, .contact-plug { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .contact-plug { z-index: 2; }
 .contact-wire { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .contact-boot { fill: #fff; }
-
-@media (hover: hover) {
-  .contact-mail a:hover { color: var(--cyan); text-decoration-color: var(--cyan); }
-  .contact-copy:hover { color: var(--cyan); border-color: var(--cyan); }
-  .contact-p:hover { color: var(--fg); background: #10131a; }
-  .contact-send:hover { box-shadow: 0 0 24px rgba(34, 211, 238, .35); }
-  .contact-again:hover, .contact-mock button:hover { color: var(--cyan); border-color: var(--cyan); }
-  .contact-fall a:hover { text-decoration-thickness: 2px; }
-}
-
-/* The form, under the panel. */
-.contact-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; gap: 1rem var(--gap); margin-top: .5rem; }
-.contact-f-name { grid-area: 1 / 1; }
-.contact-f-email { grid-area: 2 / 1; }
-.contact-f-message { grid-area: 1 / 2 / 4 / 3; display: flex; flex-direction: column; }
-.contact-end { grid-area: 3 / 1; align-self: end; display: flex; align-items: center; gap: 1rem; }
-.contact-fail { grid-column: 1 / -1; }
-.contact-sec:has(.contact-done:not([hidden])) .contact-form { display: none; }
-
-.contact-f label { display: block; font-size: .9rem; font-weight: 500; color: var(--text); margin-bottom: .35rem; }
-.contact-sec .contact-f input, .contact-sec .contact-f textarea { display: block; width: 100%; background: #07080b; color: var(--fg); font: 1.05rem/1.5 var(--sans); border: 1px solid #5b6474; border-radius: 8px; padding: .65rem .8rem; box-shadow: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
-.contact-sec .contact-f textarea { flex: 1; min-height: 9.5rem; resize: vertical; }
-.contact-sec .contact-f input:focus, .contact-sec .contact-f textarea:focus { outline: 0; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, .2); }
-.contact-sec .contact-f [aria-invalid="true"] { border-color: var(--coral); }
-.contact-sec .contact-f [aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(251, 113, 133, .2); }
-.contact-e { color: var(--coral); font-size: .875rem; margin-top: .35rem; animation: contact-in .25s var(--ease); }
+.contact-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); grid-template-rows: auto auto auto 1fr; gap: 1rem 1.5rem; margin-top: .5rem; max-width: 66rem; }
+.contact-availability { grid-column: 1 / -1; color: #fb7185; font-size: .875rem; }
+.contact-availability a { display: inline-block; color: #fff; text-decoration: underline; text-underline-offset: 3px; margin-left: .3rem; }
+.contact-f-name { grid-area: 2 / 1; }
+.contact-f-email { grid-area: 3 / 1; }
+.contact-f-message { grid-area: 2 / 2 / 5 / 3; display: flex; flex-direction: column; }
+.contact-end { grid-area: 4 / 1; display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1rem; align-self: end; }
+.contact-f label { display: block; color: #fff; font-size: .9rem; margin-bottom: .35rem; }
+.contact-sec .contact-f input, .contact-sec .contact-f textarea { display: block; width: 100%; min-width: 0; background: #000; color: #fff; font: 1rem/1.5 var(--sans); border: 1px solid #657083; border-radius: 3px; padding: .65rem .75rem; }
+.contact-sec .contact-f textarea { min-height: 10rem; resize: vertical; flex: 1; }
+.contact-sec .contact-f input:focus, .contact-sec .contact-f textarea:focus { outline: 2px solid var(--cyan); outline-offset: 2px; border-color: var(--cyan); }
+.contact-sec .contact-f [aria-invalid="true"] { border-color: #fb7185; }
+.contact-e { color: #fb7185; font-size: .875rem; margin-top: .35rem; }
 .contact-e:empty { display: none; }
-@keyframes contact-in { from { opacity: 0; transform: translateY(-3px); } }
 .contact-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
-.contact-sec .contact-send { margin: 0; display: inline-flex; align-items: center; padding: .7rem 1.6rem; border-radius: 8px; background: var(--cyan); color: var(--cyan-ink); font-weight: 600; transition: box-shadow .2s var(--ease), transform .12s var(--ease); }
-.contact-send:focus-visible { box-shadow: 0 0 24px rgba(34, 211, 238, .35); }
-.contact-send:active { transform: translateY(1px) scale(.985); }
-.contact-send[aria-disabled="true"] { cursor: progress; box-shadow: none; transform: none; }
-.contact-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-/* An unavailable form needs a visible explanation before anyone starts typing. */
-.contact-sec[data-offline="true"] .contact-status { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; color: var(--muted); font-size: .875rem; }
-.contact-sec[data-offline="true"] input:disabled,
-.contact-sec[data-offline="true"] textarea:disabled { opacity: .6; cursor: not-allowed; }
-.contact-send:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; transform: none; }
-
-.contact-fail { padding-top: 1rem; border-top: 1px solid var(--line); animation: contact-rise .45s var(--ease) both; }
-.contact-fail:focus, .contact-done:focus { outline: 0; }
-.contact-fail p { color: var(--text); }
-.contact-fail p b { color: var(--coral); font-weight: 600; }
-.contact-fall { display: flex; flex-wrap: wrap; gap: .25rem 1rem; align-items: baseline; margin-top: .4rem; }
-.contact-fall a { color: var(--cyan); font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
-.contact-fall span { color: var(--muted); font-size: .9rem; }
-.contact-done { margin-top: .5rem; padding: 1.5rem 0 .5rem; animation: contact-rise .45s var(--ease) both; }
-.contact-done h3 { font-size: clamp(1.6rem, 1.2rem + 1vw, 2.25rem); }
+.contact-sec .contact-send { display: inline-flex; align-items: center; justify-content: center; margin: 0; min-height: 44px; padding: .65rem 1.6rem; border-radius: 3px; background: var(--cyan); color: var(--cyan-ink); font-weight: 600; }
+.contact-send[aria-disabled="true"] { cursor: progress; }
+.contact-status { color: var(--text); font-size: .875rem; }
+.contact-sec[data-state="error"] .contact-status { color: #fb7185; }
+.contact-fail { grid-column: 1 / -1; padding-top: 1rem; border-top: 1px solid #553039; }
+.contact-fail p b { color: #fb7185; }
+.contact-fall { display: flex; flex-wrap: wrap; gap: .35rem 1rem; margin-top: .5rem; align-items: baseline; }
+.contact-fall a { display: inline-flex; align-items: center; min-height: 44px; color: var(--cyan); font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
+.contact-fall span { color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
+.contact-done { margin-top: .5rem; padding: 1rem 0; }
+.contact-done h3 { font-size: 1.7rem; }
 .contact-done p { margin-top: .4rem; }
-@keyframes contact-rise { from { opacity: 0; transform: translateY(8px); } }
-.contact-again { margin-top: 1.25rem; font-size: .9rem; font-weight: 500; padding: .55rem 1rem; border-radius: 8px; border: 1px solid var(--edge); transition: color .2s var(--ease), border-color .2s var(--ease); }
-.contact-again:focus-visible { color: var(--cyan); border-color: var(--cyan); }
-
-.contact-mock { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: 1.5rem; font-size: .875rem; color: var(--muted); }
-.contact-mock span { margin-right: .25rem; }
-.contact-mock button { font-size: .875rem; padding: .25rem .65rem; border-radius: 6px; border: 1px solid var(--edge); color: var(--text); transition: color .2s var(--ease), border-color .2s var(--ease); }
-.contact-mock button:focus-visible { color: var(--cyan); border-color: var(--cyan); }
-.contact-mock button[aria-pressed="true"] { border-color: #fff; color: var(--fg); }
-
-/* Empty ports by width: 19 from 1700 (a full 24 port panel), 11 by default, 7 under 1280, 3 under 900. */
-@media (min-width: 1700px) { .contact-panel ul { --b: 19; } .contact-port:nth-child(n+17) { display: grid; } }
-@media (max-width: 1279px) { .contact-panel ul { --b: 7; } .contact-port:nth-child(n+13) { display: none; } }
-@media (max-width: 900px) {
-  .contact-panel ul { --b: 3; } .contact-port:nth-child(n+9) { display: none; }
-  .contact-top { grid-template-columns: minmax(0, 1fr); }
+.contact-again { margin-top: 1rem; padding: .6rem 1rem; min-height: 44px; border: 1px solid var(--edge); border-radius: 3px; }
+.contact-sec[data-state="sent"] .contact-form { display: none; }
+@media (max-width: 999px) { .contact-top { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 599px) {
+  .contact-panel { padding: .6rem .4rem; }
+  .contact-panel ul { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 1rem; }
   .contact-form { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
   .contact-f-name, .contact-f-email, .contact-f-message, .contact-end { grid-area: auto; }
-}
-/* Phone: two rows of three, like a two row panel; the sixth port is empty. */
-@media (max-width: 760px) {
-  .contact-panel ul { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: .6rem; } .contact-port:nth-child(n+7) { display: none; } .contact-port:nth-child(6) { display: grid; }
-  .contact-panel { padding: .6rem .35rem .8rem; }
-  .contact-panel::before, .contact-panel::after { display: none; }
   .contact-p { padding-inline: 0; }
   .contact-lbl { gap: .3rem; }
-  .contact-mock span { flex-basis: 100%; }
+  .contact-availability a { margin-left: 0; }
+  .contact-f textarea { min-height: 9rem; }
 }
+@media (prefers-reduced-motion: reduce) { .contact-act .contact-led { animation: none; } }
+
+/* A: a compact five-port patch panel. Phone rows contain three and two ports. */
+.contact-rack { width: min(100%, 36rem); }

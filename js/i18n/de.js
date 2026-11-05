@@ -586,4 +586,11 @@
   "Computer engineering graduate, focused on Linux systems and security.": "Absolvent der Technischen Informatik mit Schwerpunkt auf Linux-Systemen und Sicherheit.",
   "at": "bei",
   "Systems Engineer": "Systems Engineer",
+  "Email delivery unavailable.": "Der Versand über das Formular ist nicht verfügbar.",
+  "Message not sent.": "Nachricht nicht gesendet.",
+  "Message sent.": "Nachricht gesendet.",
+  "Unavailable": "Nicht verfügbar",
+  "Please shorten this field.": "Bitte kürzen Sie diesen Text.",
+  "Badge tilt enabled.": "Die Neigung des Ausweises ist aktiviert.",
+  "Badge tilt unavailable.": "Die Neigung des Ausweises ist nicht verfügbar.",
 };

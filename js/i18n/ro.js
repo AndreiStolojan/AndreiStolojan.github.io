@@ -586,4 +586,11 @@
   "Computer engineering graduate, focused on Linux systems and security.": "Absolvent de ingineria calculatoarelor, cu interes pentru sisteme Linux și securitate.",
   "at": "la",
   "Systems Engineer": "Systems Engineer",
+  "Email delivery unavailable.": "Trimiterea prin formular este indisponibilă.",
+  "Message not sent.": "Mesajul nu a fost trimis.",
+  "Message sent.": "Mesaj trimis.",
+  "Unavailable": "Indisponibil",
+  "Please shorten this field.": "Scurtează textul din acest câmp, te rog.",
+  "Badge tilt enabled.": "Balansul insignei este activat.",
+  "Badge tilt unavailable.": "Balansul insignei nu este disponibil.",
 };
