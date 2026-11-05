@@ -1,0 +1,62 @@
+/* Shared project spacing and image rhythm. */
+.project-detail::before,
+.project-detail::after { display: none; }
+.project-detail .page { max-width: 1680px; margin-inline: auto; }
+.project-detail .crumb { margin-top: 1.75rem; }
+.project-detail .dhead {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem clamp(2rem, 5vw, 5.5rem);
+  padding-block: 2rem 2.75rem;
+}
+.project-detail .dhead h1 { font-size: clamp(2.75rem, 4.5vw, 4.5rem); letter-spacing: -.04em; }
+.project-detail .dhead .lead { max-width: 32em; font-size: clamp(1.1rem, 1rem + .25vw, 1.25rem); line-height: 1.5; }
+.project-detail .dhead .actions { align-items: center; gap: .65rem; margin-top: 1.4rem; }
+.project-detail .kv { max-width: none; grid-template-columns: 6.5rem minmax(0, 1fr); gap: .6rem 1.2rem; padding-top: .4rem; font-size: .9375rem; line-height: 1.5; }
+.project-detail .kv dt { font-size: .875rem; padding-top: .05rem; }
+.project-detail .kv dd { min-width: 0; overflow-wrap: anywhere; }
+.project-detail .page > section { padding-top: clamp(2.75rem, 4vw, 4rem); }
+.project-detail .page > section > h2 { font-size: clamp(1.5rem, 1.2rem + .8vw, 1.9rem); padding-bottom: .75rem; margin-bottom: 1.5rem; }
+.project-detail .cover { padding-top: 1.75rem; }
+.project-detail .cover img,
+.project-detail .shots img { border-radius: 6px; }
+.project-detail .shots { gap: 2rem 1.75rem; }
+.project-detail .shots + .shots { margin-top: 2rem; }
+.project-detail figcaption { font-size: .9rem; line-height: 1.5; margin-top: .7rem; max-width: 58ch; }
+.project-detail .notches { gap: 1.75rem; }
+.project-detail .tile { border-radius: 6px; background: #08090c; outline-color: #1b1e25; }
+.project-detail .prose { max-width: 64ch; font-size: 1rem; line-height: 1.65; }
+.project-detail .prose.cols { max-width: 126ch; column-gap: clamp(2rem, 5vw, 5rem); }
+.project-detail .credit { max-width: 80ch; }
+.project-detail .two-col { gap: 2rem clamp(2rem, 4vw, 4rem); }
+.project-detail .placeholder { border-radius: 6px; background: none; }
+.project-detail footer { margin-top: clamp(3rem, 5vw, 5rem); }
+@media (max-width: 1000px) {
+  .project-detail .dhead { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .project-detail .kv { max-width: 48rem; padding-top: 0; }
+}
+@media (max-width: 600px) {
+  .project-detail .dhead { padding-block: 1.5rem 2rem; }
+  .project-detail .kv { grid-template-columns: 5.5rem minmax(0, 1fr); gap: .55rem 1rem; }
+  .project-detail .dhead .actions { gap: .6rem; }
+  .project-detail .shots + .shots { margin-top: 1.75rem; }
+  .project-detail .cover { padding-top: 1.25rem; }
+}
+
+/* Compact facts below the introduction. */
+.project-detail .dhead { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; padding-bottom: 2rem; }
+.project-detail .dhead > div { max-width: 64rem; }
+.project-detail .dhead h1 { font-size: clamp(2.75rem, 4vw, 4rem); }
+.project-detail .dhead .lead { max-width: 45em; }
+.project-detail .kv { max-width: none; grid-template-columns: 6.5rem minmax(0, 1fr) 6.5rem minmax(0, 1fr); gap: .65rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.project-detail .cover { border-top: 0; padding-top: 0; }
+.project-detail .page > section > h2 { border-bottom: 0; padding-bottom: 0; margin-bottom: 1.25rem; }
+.project-detail .notches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.project-detail .notches .tile { min-height: 13rem; }
+@media (max-width: 800px) {
+  .project-detail .kv { grid-template-columns: 6.5rem minmax(0, 1fr); gap: .55rem 1rem; }
+}
+@media (max-width: 600px) {
+  .project-detail .kv { grid-template-columns: 5.5rem minmax(0, 1fr); }
+  .project-detail .notches { grid-template-columns: minmax(0, 1fr); }
+}

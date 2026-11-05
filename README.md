@@ -64,7 +64,7 @@ Live configuration verified on 5 November 2026: GitHub Pages publishes `main` at
 3. **HTTPS.** Repository Settings, Pages: once the DNS check passes, GitHub issues a certificate (this can also
    take up to 24 hours). Then tick **Enforce HTTPS**.
 4. **Contact form key.** See [Contact form](#contact-form).
-5. **Publish.** Merge `site-v1` into `main` and push. Pages deploys in a minute or two.
+5. **Publish.** Merge the approved changes into `main` and push. Pages deploys in a minute or two.
 
 The sources above are GitHub's
 [custom domain docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
@@ -121,11 +121,13 @@ To find every one: `grep -rn "andreistolojan\.me" --exclude-dir=.git --exclude-d
 ## Home page design
 
 The approved page combines the hanging contact badge, tape labels for certificates, the handball and chess
-interactions, and the contact patch panel. The badge uses the satin PVC finish, an SVG metal clip and woven strap.
+interactions, and the contact patch panel. The badge uses the satin PVC finish, an SVG metal clip and woven strap. The left headline uses the Atos wordmark
+and the role Systems Engineer. The location, language-level and home-server facts row has been removed.
 Its barcode and downloaded contact card both use `andreistolojan.me`.
 
 Section styles and scripts live in matching files under `css/` and `js/`. The badge uses `hero.*`, the tape library
 uses `certifications.*`, and the contact panel uses `contact.*` plus `contact-form.js` for validation and delivery.
+The shared compact header uses `css/navigation.css`; the project detail layout uses `css/project-pages.css`.
 The language buttons use `js/i18n.js` and the Romanian, German and French dictionaries in `js/i18n/`.
 
 ## Editing notes

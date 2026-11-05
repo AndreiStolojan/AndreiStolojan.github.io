@@ -26,6 +26,8 @@
     // An empty key leaves the address available and disables sending before a visitor types.
     const key = form.elements.access_key.value;
     if (!key) {
+      root.dataset.offline = 'true';
+      fields.forEach(field => { field.disabled = true; });
       sendBtn.disabled = true;
       status.textContent = 'The form is offline right now.';
     }

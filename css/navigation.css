@@ -1,0 +1,54 @@
+/* Compact type, full touch targets. Preserve the baseline desktop header height. */
+body .bar { border-bottom: 0; background: rgba(0,0,0,.68); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+body .bar .in { min-height: 3.75rem; gap: clamp(.75rem,1.6vw,1.5rem); flex-wrap: nowrap; }
+body .bar .name { display: inline-flex; align-items: center; min-height: 44px; font-size: .9375rem; font-weight: 500; letter-spacing: -.015em; white-space: nowrap; }
+body .bar nav { align-items: center; gap: clamp(.75rem,1.35vw,1.3rem); font-size: .8125rem; font-weight: 400; }
+body .bar nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; white-space: nowrap; }
+body .bar .lang { flex-shrink: 0; padding: 0; border: 0; gap: 0; font-size: .6875rem; letter-spacing: .025em; }
+body .bar .lang button { position: relative; isolation: isolate; min-width: 38px; min-height: 44px; padding: 0; background: transparent; border-radius: 0; color: #a2abba; }
+body .bar .lang button::before { content: ""; position: absolute; z-index: -1; inset: 9px 3px; border-radius: 5px; }
+body .bar .lang button[aria-pressed="true"] { color: #fff; background: transparent; }
+body .bar .lang button[aria-pressed="true"]::before { background: rgba(255,255,255,.1); }
+body .bar .lang button:hover { color: #fff; }
+body .bar .btn.primary { flex-shrink: 0; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 .65rem; font-size: .75rem; border: 0; border-radius: 0; background: transparent; color: #fff; box-shadow: none; }
+body .bar .btn.primary:hover { color: var(--cyan); }
+body .bar :focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+
+/* One continuous black field. Only these three home sections lose their rules. */
+body.home .badge-hero { border-bottom: 0; }
+body.home .badge-hero::before { background: radial-gradient(75% 95% at 72% 0%,rgba(14,40,90,.36),transparent 75%); }
+body.home .badge-hero::after { opacity: .55; -webkit-mask-image: linear-gradient(#000,transparent); mask-image: linear-gradient(#000,transparent); }
+body.home #about.abt-sec { border: 0; padding-top: clamp(3rem,5vw,5rem); }
+body.home #projects.prj-sec { border: 0; background: transparent; margin-top: clamp(3rem,5vw,5rem); padding-top: clamp(2.5rem,4vw,4rem); }
+body.home #projects.prj-sec h2 { border-bottom: 0; }
+
+/* Two ordered rows avoid accidental wrapping at tablet widths. */
+@media (max-width: 1100px) {
+  body .bar .in { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 0 12px; padding-block: 0; }
+  body .bar .name { grid-column: 1; grid-row: 1; }
+  body .bar .lang { grid-column: 2; grid-row: 1; margin-left: 0; }
+  body .bar nav { grid-column: 1 / -1; grid-row: 2; order: initial; min-width: 0; width: calc(100% - 56px); margin: 0; flex-wrap: nowrap; gap: 1.1rem; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+  body .bar nav a { flex-shrink: 0; }
+  body .bar .btn.primary { grid-column: 2; grid-row: 2; justify-self: end; }
+}
+@media (max-width: 640px) {
+  /* Match baseline phone behavior: the two-row header scrolls away. */
+  body .bar { position: static; }
+  body .bar .name { font-size: .875rem; }
+  body .bar .lang button { min-width: 36px; }
+  body .bar nav { font-size: .8125rem; gap: 1rem; }
+}
+
+/* A quiet ink bar and a fine active-language underline. */
+body .bar { background: rgba(0,0,0,.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+body .bar .name { font-weight: 600; font-size: .875rem; }
+body .bar .lang button[aria-pressed="true"]::before { inset: auto 12px 8px; height: 1px; background: #fff; border-radius: 0; }
+body.home .badge-hero::before { background: radial-gradient(75% 95% at 72% 0%,rgba(14,40,90,.22),transparent 75%); }
+body.home .badge-hero::after { opacity: .35; }
+
+/* Keep anchors and the pinned path below the measured navigation rows. */
+body { --polish-header-offset: 60px; }
+body .page > section { scroll-margin-top: calc(var(--polish-header-offset) + 16px); }
+body.home .jr.pin .jr-stage { top: var(--polish-header-offset); height: calc(100vh - var(--polish-header-offset)); }
+@media (min-width:641px) and (max-width:1100px) { body { --polish-header-offset:88px; } }
+@media (max-width:640px) { body { --polish-header-offset:0px; } }

@@ -247,8 +247,17 @@ for (const path of pages) {
 {
   // As committed: no key, so the form is offline and shows the address.
   const { page, errors } = await open('/', 1440);
-  const s = await page.evaluate(() => ({ text: document.querySelector('.contact-status')!.textContent!.trim(), address: document.querySelector('.contact-mail')!.textContent!, disabled: (document.querySelector('.contact-send') as HTMLButtonElement).disabled }));
-  ok(s.disabled && s.address.includes('andreistolojan@gmail.com') && s.text.includes('offline') && !errors.length, `contact, no key: "${s.text}" (button disabled ${s.disabled})`);
+  const s = await page.evaluate(() => {
+    const status = document.querySelector<HTMLElement>('.contact-status')!;
+    const box = status.getBoundingClientRect();
+    return {
+      text: status.textContent!.trim(), address: document.querySelector('.contact-mail')!.textContent!,
+      disabled: document.querySelector<HTMLButtonElement>('.contact-send')!.disabled,
+      fieldsDisabled: [...document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.contact-form [name="name"], .contact-form [name="email"], .contact-form [name="message"]')].every(field => field.disabled),
+      visible: getComputedStyle(status).clipPath === 'none' && box.width > 10 && box.height > 10,
+    };
+  });
+  ok(s.disabled && s.fieldsDisabled && s.visible && s.address.includes('andreistolojan@gmail.com') && s.text.includes('offline') && !errors.length, `contact, no key: visible "${s.text}" (button and fields disabled ${s.disabled && s.fieldsDisabled})`);
   await page.close();
 
   // With a test key, and Web3Forms answered by this script.

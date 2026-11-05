@@ -152,3 +152,17 @@ body::before, body::after { display: none; }
 @media(max-width:640px){ .badge-hang { --strap:6.9rem; } }
 
 .badge-badge::after { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23657583' opacity='.09' filter='url(%23n)' d='M0 0h160v160H0z'/%3E%3C/svg%3E");opacity:.17; }
+
+/* Left hero only. A deliberate role break, with a quieter company line. */
+.home .badge-txt { min-width: 0; }
+.home .badge-txt .badge-t { max-width: 12em; margin: 0; font-size: clamp(2.55rem, 4vw, 4.6rem); font-weight: 600; line-height: 1.06; letter-spacing: -.04em; }
+.home .badge-txt .hero-role > span { display: block; }
+.home .badge-txt .hero-employer { display: flex; align-items: center; gap: .4em; margin-top: .65em; font-size: .64em; font-weight: 400; letter-spacing: -.02em; }
+.home .badge-txt .hero-atos { display: block; width: 2.5em; height: auto; }
+.home .badge-txt .badge-lead { max-width: 29em; margin-top: 1.75rem; font-size: clamp(1.05rem, 1.25vw, 1.2rem); line-height: 1.6; color: #c8cdd6; }
+.home .badge-txt .badge-act { margin-top: 1.75rem; gap: .65rem; }
+@media (max-width: 640px) {
+  .home .badge-txt .badge-t { font-size: clamp(2.3rem, 8vw, 3.4rem); }
+  .home .badge-txt .hero-employer { margin-top: .55em; }
+  .home .badge-txt .badge-lead { margin-top: 1.4rem; max-width: 27em; }
+}
