@@ -25,6 +25,12 @@
   min-width: 0;
 }
 
+/* Give the desktop badge a little more width and breathing room at the right edge. */
+@media (min-width: 1101px) {
+  .home .badge-hero[data-hero-layout="a"] .badge-badge { width: clamp(22.25rem, 27vw, 27.5rem); }
+  .home .badge-hero[data-hero-layout="a"] .badge-hang { margin-inline-end: 1.5rem; }
+}
+
 /* The single DOM order is title, badge, description and actions. */
 @media (max-width: 1100px) {
   .home .badge-hero[data-hero-layout="a"] > .badge-txt {

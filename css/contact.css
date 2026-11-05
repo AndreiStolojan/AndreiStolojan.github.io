@@ -75,3 +75,9 @@
 
 /* A: a compact five-port patch panel. Phone rows contain three and two ports. */
 .contact-rack { width: min(100%, 36rem); }
+
+/* Center the existing desktop contact layout as one block. */
+@media (min-width: 1101px) {
+  .contact-sec { max-width: 66rem; margin-inline: auto; }
+  .contact-rack { margin-inline: auto; }
+}
